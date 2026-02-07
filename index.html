@@ -1125,6 +1125,92 @@
 
     .footer-links a:hover { color: var(--text); }
 
+    /* ===== Benchmark Gallery ===== */
+    .benchmark-gallery {
+      margin-top: 40px;
+    }
+
+    .benchmark-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .benchmark-item {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .benchmark-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.08);
+    }
+
+    .benchmark-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .benchmark-caption {
+      padding: 16px 20px;
+    }
+
+    .benchmark-caption h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .benchmark-caption p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 1024px) {
+      .benchmark-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .benchmark-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== Screenshot Gallery ===== */
+    .screenshot-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .screenshot-item {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .screenshot-item:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+    }
+
+    .screenshot-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .screenshot-gallery { grid-template-columns: 1fr; }
+    }
+
     /* ===== Reveal ===== */
     .reveal {
       opacity: 0;
@@ -1339,7 +1425,7 @@
         <div class="paper-abstract-box reveal reveal-d2">
           <div class="paper-abstract-label">Abstract</div>
           <p class="paper-abstract-text">
-            The M-series chips produced by Apple have proven a capable and power-efficient alternative to traditional computing architectures. We present <strong>mlxQuantum</strong>, a quantum circuit simulation framework leveraging Apple's MLX array framework for GPU-accelerated computation on Apple Silicon. Unlike discrete GPU systems that require explicit memory transfers, the unified memory architecture enables seamless CPU-GPU data sharing, eliminating the primary bottleneck in quantum state manipulation. Through comprehensive benchmarking across <strong>1-25 qubits</strong> using QFT, QCBM, and VQE circuits, we demonstrate that consumer-grade hardware delivers research-quality quantum simulation within <strong>15% of cuQuantum</strong> performance while achieving <strong>2.3x better energy efficiency</strong>. Our framework validates against PennyLane, Qulacs, and Yao.jl, establishing Apple Silicon as a viable platform for quantum computing research and democratizing access by eliminating CUDA dependencies.
+            We present <strong>mlxQ</strong>, an open-source quantum circuit simulation framework built on Apple's MLX array framework, targeting the unified memory architecture of Apple Silicon processors. By eliminating host-device memory transfers inherent in discrete GPU systems, mlxQ enables mid-scale state-vector simulations on consumer hardware with <strong>128-512 GB unified memory</strong>. The framework provides a Python-first programming model with automatic Metal GPU acceleration, supporting single- and multi-qubit gate libraries, variational quantum algorithms (VQE, QAOA, QCBM), Hamiltonian simulation with Trotter-Suzuki decomposition, and OpenQASM 2.0 circuit import. We validate correctness through <strong>over 230 regression tests</strong> with analytical verification. On Apple M1 Max hardware, we demonstrate complete 25-qubit simulation for <strong>QFT (7.03s)</strong>, <strong>QAOA (11.07s)</strong>, and <strong>Hamiltonian evolution (40.73s)</strong>, with sub-millisecond execution for shallow circuits.
           </p>
         </div>
         <div class="paper-metrics reveal reveal-d3">
@@ -1348,16 +1434,16 @@
             <div class="paper-metric-label">Qubit Range</div>
           </div>
           <div class="paper-metric">
-            <div class="paper-metric-value">15%</div>
-            <div class="paper-metric-label">Within cuQuantum</div>
+            <div class="paper-metric-value">7.03s</div>
+            <div class="paper-metric-label">QFT @ 25 Qubits</div>
           </div>
           <div class="paper-metric">
-            <div class="paper-metric-value">2.3x</div>
-            <div class="paper-metric-label">Energy Efficiency</div>
+            <div class="paper-metric-value">230+</div>
+            <div class="paper-metric-label">Regression Tests</div>
           </div>
           <div class="paper-metric">
-            <div class="paper-metric-value">62</div>
-            <div class="paper-metric-label">Test Cases</div>
+            <div class="paper-metric-value">150+</div>
+            <div class="paper-metric-label">Pages Documentation</div>
           </div>
         </div>
       </div>
@@ -1531,16 +1617,16 @@
           <div class="stat-label">Max Qubits</div>
         </div>
         <div class="stat reveal reveal-d1">
-          <div class="stat-number">62</div>
-          <div class="stat-label">Test Cases</div>
+          <div class="stat-number">230+</div>
+          <div class="stat-label">Regression Tests</div>
         </div>
         <div class="stat reveal reveal-d2">
-          <div class="stat-number">2.3x</div>
-          <div class="stat-label">Energy Efficiency</div>
+          <div class="stat-number">12</div>
+          <div class="stat-label">Tutorials</div>
         </div>
         <div class="stat reveal reveal-d3">
           <div class="stat-number">5</div>
-          <div class="stat-label">Frameworks</div>
+          <div class="stat-label">Frameworks Validated</div>
         </div>
       </div>
     </div>
@@ -1557,19 +1643,19 @@
           <ul class="showcase-bullets">
             <li>
               <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Quantum Fourier Transform (QFT) up to 25 qubits
+              Quantum Fourier Transform (QFT): 7.03s at 25 qubits
             </li>
             <li>
               <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Quantum Circuit Born Machine (QCBM) benchmarks
+              QAOA ring optimization: 11.07s at 25 qubits
             </li>
             <li>
               <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Variational Quantum Eigensolver (VQE) tests
+              QCBM (9 layers): 26.28s at 25 qubits
             </li>
             <li>
               <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Individual gate operations (X/H/T/RX/RZ/CNOT/Toffoli)
+              Hamiltonian simulation: 40.73s at 25 qubits
             </li>
           </ul>
         </div>
@@ -1588,6 +1674,58 @@
 }
 
 <span class="comment"># Generates: qft_final.png, qcbm_final.png</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Benchmark Gallery -->
+      <div class="section-header reveal" style="margin-top: 80px;">
+        <h2>Exponential Scaling Results</h2>
+        <p>Complete benchmark scaling from 1-25 qubits on Apple M1 Max. All measurements confirm expected O(2<sup>n</sup>) complexity.</p>
+      </div>
+      <div class="benchmark-gallery reveal">
+        <div class="benchmark-grid">
+          <div class="benchmark-item">
+            <img src="images/qft_scaling.png" alt="QFT Scaling" loading="lazy">
+            <div class="benchmark-caption">
+              <h4>Quantum Fourier Transform</h4>
+              <p>7.03s at 25 qubits</p>
+            </div>
+          </div>
+          <div class="benchmark-item">
+            <img src="images/qcbm_scaling.png" alt="QCBM Scaling" loading="lazy">
+            <div class="benchmark-caption">
+              <h4>Quantum Circuit Born Machine</h4>
+              <p>26.28s at 25 qubits (9 layers)</p>
+            </div>
+          </div>
+          <div class="benchmark-item">
+            <img src="images/qaoa_scaling.png" alt="QAOA Scaling" loading="lazy">
+            <div class="benchmark-caption">
+              <h4>QAOA Ring Optimization</h4>
+              <p>11.07s at 25 qubits</p>
+            </div>
+          </div>
+          <div class="benchmark-item">
+            <img src="images/vqe_scaling.png" alt="VQE Scaling" loading="lazy">
+            <div class="benchmark-caption">
+              <h4>Variational Quantum Eigensolver</h4>
+              <p>~4.6 hours at 15 qubits</p>
+            </div>
+          </div>
+          <div class="benchmark-item">
+            <img src="images/hamiltonian_simulation_scaling.png" alt="Hamiltonian Simulation" loading="lazy">
+            <div class="benchmark-caption">
+              <h4>Hamiltonian Simulation</h4>
+              <p>40.73s at 25 qubits</p>
+            </div>
+          </div>
+          <div class="benchmark-item">
+            <img src="images/grover_scaling.png" alt="Grover Search" loading="lazy">
+            <div class="benchmark-caption">
+              <h4>Grover Search</h4>
+              <p>113.26s at 25 qubits</p>
+            </div>
           </div>
         </div>
       </div>
@@ -1757,6 +1895,25 @@ std::cout << <span class="string">"Time: "</span> << result.exec_time_ms << <spa
           </div>
           <h3>Framework Compatibility</h3>
           <p>Validated against PennyLane, Qulacs, Yao.jl, and cuQuantum. API patterns match established quantum computing libraries.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UI Screenshots -->
+  <section class="section section-darker">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label label-gradient">Desktop Application</div>
+        <h2>Interactive Benchmark UI</h2>
+        <p>Run all benchmarks interactively with our dedicated graphical interface. One-click execution, real-time visualization, and automatic CSV/JSON export.</p>
+      </div>
+      <div class="screenshot-gallery reveal reveal-d1">
+        <div class="screenshot-item">
+          <img src="images/screen001.png" alt="QuantumStudio UI - Benchmark Dashboard" loading="lazy">
+        </div>
+        <div class="screenshot-item">
+          <img src="images/screen002.png" alt="QuantumStudio UI - Results View" loading="lazy">
         </div>
       </div>
     </div>
