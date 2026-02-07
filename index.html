@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuantumStudio — Quantum Computing Benchmarks on Apple Silicon</title>
+  <meta name="description" content="High-performance quantum circuit simulation on Apple Silicon. Run QFT, VQE, QCBM benchmarks using MLX GPU acceleration. No CUDA required.">
+  <meta property="og:title" content="QuantumStudio — Quantum Computing Benchmarks on Apple Silicon">
+  <meta property="og:description" content="Democratizing quantum computing research. Run state-of-the-art quantum simulations on your MacBook with MLX acceleration.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-subtle: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --border: #e5e7eb;
+      --border-hover: #d1d5db;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      --accent: #0A84FF;
+      --accent-dark: #0066CC;
+      --accent-mid: #2196F3;
+      --accent-soft: #EBF5FF;
+      --accent-purple: #6E40C9;
+      --accent-purple-dark: #553098;
+      --glow: rgba(10, 132, 255, 0.08);
+      --glow-soft: rgba(10, 132, 255, 0.04);
+      --surface-light: #f9fafb;
+      --surface-warm: #f1f5f9;
+      --surface-border: #e2e8f0;
+      --text-dark: #0f172a;
+      --text-dark-muted: #64748b;
+      --radius: 16px;
+      --radius-lg: 24px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ===== Nav ===== */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 14px 0;
+      transition: all 0.3s;
+      border-bottom: 1px solid transparent;
+    }
+
+    nav.scrolled {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom-color: var(--border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 20px;
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 100px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 24px rgba(10, 132, 255, 0.3);
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    /* ===== Hero ===== */
+    .hero {
+      position: relative;
+      padding: 150px 0 80px;
+      text-align: center;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 900px;
+      background: radial-gradient(circle, rgba(110, 64, 201, 0.08) 0%, rgba(10, 132, 255, 0.05) 40%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120%;
+      height: 400px;
+      background:
+        repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(10, 132, 255, 0.03) 8px, rgba(10, 132, 255, 0.03) 9px);
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse 50% 100% at 50% 50%, black 0%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse 50% 100% at 50% 50%, black 0%, transparent 70%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px 6px 8px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .hero-badge .chip {
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
+      color: #ffffff;
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 6.5vw, 76px);
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+      color: var(--text);
+      margin-bottom: 24px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 .grad {
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 60%, #00B4D8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 44px;
+      line-height: 1.65;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(10, 132, 255, 0.3);
+    }
+
+    .btn-primary svg { width: 18px; height: 18px; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 30px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+
+    .hero-meta {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-meta .sep { margin: 0 8px; opacity: 0.4; }
+
+    /* ===== Hero Illustration ===== */
+    .hero-illustration {
+      position: relative;
+      max-width: 900px;
+      margin: 56px auto 0;
+      padding: 48px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--bg-subtle) 0%, var(--bg) 100%);
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.02),
+        0 24px 80px rgba(0, 0, 0, 0.08),
+        0 0 60px rgba(10, 132, 255, 0.06);
+      z-index: 1;
+    }
+
+    .arch-diagram {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+      text-align: center;
+    }
+
+    .arch-box {
+      padding: 24px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .arch-box:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    }
+
+    .arch-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      background: var(--accent-soft);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .arch-icon svg {
+      width: 24px;
+      height: 24px;
+      color: var(--accent);
+    }
+
+    .arch-icon.gradient-bg {
+      background: linear-gradient(135deg, rgba(110, 64, 201, 0.15) 0%, rgba(10, 132, 255, 0.15) 100%);
+    }
+
+    .arch-icon.gradient-bg svg {
+      color: var(--accent-purple);
+    }
+
+    .arch-box h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .arch-box p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ===== Tech Carousel ===== */
+    .tech-carousel {
+      padding: 64px 0 0;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .tech-carousel p {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+
+    .carousel-wrapper {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .carousel-wrapper::before,
+    .carousel-wrapper::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .carousel-wrapper::before {
+      left: 0;
+      background: linear-gradient(to right, var(--bg) 0%, transparent 100%);
+    }
+
+    .carousel-wrapper::after {
+      right: 0;
+      background: linear-gradient(to left, var(--bg) 0%, transparent 100%);
+    }
+
+    .carousel-track {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      width: max-content;
+      animation: carousel-scroll 40s linear infinite;
+    }
+
+    .carousel-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes carousel-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .carousel-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      min-width: 90px;
+    }
+
+    .carousel-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .carousel-icon:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+    }
+
+    .carousel-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .carousel-icon.blue-bg { background: var(--accent); }
+    .carousel-icon.purple-bg { background: var(--accent-purple); }
+    .carousel-icon.gradient-bg { background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%); }
+    .carousel-icon.teal-bg { background: #14b8a6; }
+    .carousel-icon.green-bg { background: #10b981; }
+    .carousel-icon.orange-bg { background: #f97316; }
+    .carousel-icon.rose-bg { background: #f43f5e; }
+    .carousel-icon.sky-bg { background: #0ea5e9; }
+
+    .carousel-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* ===== Sections ===== */
+    .section { padding: 120px 0; }
+    .section-dark { background: var(--bg); color: var(--text); }
+    .section-darker { background: var(--bg-subtle); color: var(--text); }
+    .section-light { background: var(--surface-light); color: var(--text); }
+    .section-warm { background: var(--surface-warm); color: var(--text); }
+
+    .section-header {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 64px;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+
+    .label-gradient {
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-header h2 {
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .section-header p {
+      font-size: 17px;
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    /* ===== Feature Cards ===== */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      padding: 28px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.06);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-emoji {
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .feature-card .feature-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .feature-tag {
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+
+    .feature-tag.highlight {
+      border-color: var(--accent);
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+    }
+
+    /* ===== Feature Showcase ===== */
+    .showcase {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .showcase.reversed { direction: rtl; }
+    .showcase.reversed > * { direction: ltr; }
+
+    .showcase-text h3 {
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .showcase-text p {
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      color: var(--text-muted);
+    }
+
+    .showcase-bullets {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      list-style: none;
+    }
+
+    .showcase-bullets li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .showcase-bullets .bullet-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+      background: var(--accent-soft);
+    }
+
+    .showcase-bullets .bullet-icon svg {
+      width: 12px;
+      height: 12px;
+      color: var(--accent);
+    }
+
+    .showcase-visual {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      padding: 32px;
+      transition: transform 0.4s;
+    }
+
+    .showcase-visual:hover { transform: scale(1.02); }
+
+    .code-block {
+      background: var(--text);
+      border-radius: 12px;
+      padding: 20px;
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+      font-size: 13px;
+      color: #e2e8f0;
+      overflow-x: auto;
+    }
+
+    .code-block .comment { color: #64748b; }
+    .code-block .keyword { color: #c084fc; }
+    .code-block .string { color: #34d399; }
+    .code-block .number { color: #fbbf24; }
+    .code-block .function { color: #60a5fa; }
+
+    /* ===== Paper Abstract Section ===== */
+    .paper-abstract-section {
+      padding: 80px 0;
+      background: linear-gradient(180deg, var(--bg) 0%, rgba(110, 64, 201, 0.03) 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .paper-abstract-container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .paper-journal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(110, 64, 201, 0.1) 0%, rgba(10, 132, 255, 0.1) 100%);
+      border: 1px solid rgba(110, 64, 201, 0.2);
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-purple);
+      margin-bottom: 24px;
+    }
+
+    .paper-journal-badge svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .paper-title {
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 32px;
+      letter-spacing: -0.02em;
+    }
+
+    .paper-title .highlight {
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .paper-abstract-box {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 40px;
+      text-align: left;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .paper-abstract-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-purple);
+      margin-bottom: 12px;
+    }
+
+    .paper-abstract-text {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--text-muted);
+    }
+
+    .paper-abstract-text strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .paper-metrics {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    .paper-metric {
+      text-align: center;
+    }
+
+    .paper-metric-value {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .paper-metric-label {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* ===== Stats Row ===== */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 80px;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 32px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* ===== Specs Grid ===== */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .spec-card {
+      padding: 28px 24px;
+      background: white;
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .spec-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    }
+
+    .spec-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, rgba(110, 64, 201, 0.12) 0%, rgba(10, 132, 255, 0.12) 100%);
+    }
+
+    .spec-icon svg {
+      width: 22px;
+      height: 22px;
+      color: var(--accent-purple);
+    }
+
+    .spec-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .spec-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ===== Chip Pills ===== */
+    .chip-strip {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 40px;
+    }
+
+    .chip-pill {
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .chip-pill:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .chip-pill.m1 {
+      background: #fef3c7;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+
+    .chip-pill.m2 {
+      background: #dbeafe;
+      border-color: #60a5fa;
+      color: #1e40af;
+    }
+
+    .chip-pill.m3 {
+      background: #d1fae5;
+      border-color: #34d399;
+      color: #065f46;
+    }
+
+    .chip-pill.m4 {
+      background: #f3e8ff;
+      border-color: #c084fc;
+      color: #6b21a8;
+    }
+
+    /* ===== Academic Section ===== */
+    .academic-section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, rgba(110, 64, 201, 0.03) 0%, rgba(10, 132, 255, 0.03) 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .academic-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .academic-text h3 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .academic-text p {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .paper-card {
+      padding: 24px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .paper-card .journal {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-purple);
+      margin-bottom: 8px;
+    }
+
+    .paper-card .title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .paper-card .authors {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .paper-card .abstract {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ===== CTA ===== */
+    .cta-section {
+      padding: 120px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--text);
+      color: #ffffff;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      bottom: -300px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(110, 64, 201, 0.2) 0%, rgba(10, 132, 255, 0.1) 40%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+      color: #ffffff;
+    }
+
+    .cta-section p {
+      font-size: 17px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 40px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-section .hero-buttons { position: relative; z-index: 1; }
+
+    .cta-section .btn-primary {
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    .cta-section .btn-primary:hover {
+      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.2);
+    }
+
+    .cta-section .btn-ghost {
+      color: rgba(255, 255, 255, 0.7);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .cta-section .btn-ghost:hover {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .cta-section .hero-meta {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      background: var(--bg);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-dim);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    /* ===== Reveal ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+    .reveal-d4 { transition-delay: 0.35s; }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1024px) {
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .specs-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .showcase { grid-template-columns: 1fr; gap: 32px; }
+      .showcase.reversed { direction: ltr; }
+      .arch-diagram { grid-template-columns: 1fr; }
+      .academic-content { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .mobile-toggle { display: block; }
+
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 20px 24px;
+        gap: 14px;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+      }
+
+      .hero { padding: 120px 0 60px; }
+      .section { padding: 80px 0; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .specs-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .carousel-track { gap: 28px; animation-duration: 30s; }
+      .carousel-icon { width: 48px; height: 48px; border-radius: 12px; }
+      .carousel-icon svg { width: 24px; height: 24px; }
+      .carousel-wrapper::before, .carousel-wrapper::after { width: 60px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-buttons { flex-direction: column; }
+      .hero-buttons .btn-primary,
+      .hero-buttons .btn-ghost { width: 100%; justify-content: center; }
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav id="nav">
+    <div class="container">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-icon">Q</div>
+        QuantumStudio
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#benchmarks">Benchmarks</a></li>
+        <li><a href="#silicon">Apple Silicon</a></li>
+        <li><a href="#research">Research</a></li>
+        <li><a href="#specs">Specs</a></li>
+        <li>
+          <a href="#download" class="nav-cta">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download
+          </a>
+        </li>
+      </ul>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge reveal">
+        <span class="chip">Apple Silicon</span>
+        MLX Accelerated &middot; 1-25 Qubits &middot; No CUDA Required
+      </div>
+      <h1 class="reveal reveal-d1">
+        Quantum computing<br>on <span class="grad">your Mac</span>
+      </h1>
+      <p class="hero-sub reveal reveal-d2">
+        High-performance quantum circuit simulation powered by MLX.
+        Run QFT, VQE, and QCBM benchmarks on Apple Silicon with GPU acceleration.
+        Democratizing quantum computing research.
+      </p>
+      <div class="hero-buttons reveal reveal-d3">
+        <a href="#download" class="btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download for macOS
+        </a>
+        <a href="#features" class="btn-ghost">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+          Explore Features
+        </a>
+      </div>
+      <p class="hero-meta reveal reveal-d4">
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M20 15h2"/><path d="M9 2v2"/><path d="M9 20v2"/><path d="M2 9h2"/><path d="M20 9h2"/></svg>
+          M1 / M2 / M3 / M4
+        </span>
+        <span class="sep">&middot;</span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          State Vector Simulation
+        </span>
+        <span class="sep">&middot;</span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          MLX GPU Acceleration
+        </span>
+        <span class="sep">&middot;</span>
+        <span>Open Source</span>
+      </p>
+
+      <!-- Architecture Diagram -->
+      <div class="hero-illustration reveal reveal-d4">
+        <div class="arch-diagram">
+          <div class="arch-box">
+            <div class="arch-icon gradient-bg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                <polyline points="2 17 12 22 22 17"/>
+                <polyline points="2 12 12 17 22 12"/>
+              </svg>
+            </div>
+            <h4>Quantum Circuits</h4>
+            <p>QFT, VQE, QCBM, Grover</p>
+          </div>
+          <div class="arch-box">
+            <div class="arch-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+            </div>
+            <h4>MLX Engine</h4>
+            <p>GPU + Unified Memory</p>
+          </div>
+          <div class="arch-box">
+            <div class="arch-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <rect x="4" y="4" width="16" height="16" rx="2"/>
+                <rect x="9" y="9" width="6" height="6"/>
+                <path d="M15 2v2"/>
+                <path d="M15 20v2"/>
+                <path d="M2 15h2"/>
+                <path d="M20 15h2"/>
+              </svg>
+            </div>
+            <h4>Apple Silicon</h4>
+            <p>M1 / M2 / M3 / M4 Max</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Paper Abstract -->
+  <section class="paper-abstract-section">
+    <div class="container">
+      <div class="paper-abstract-container reveal">
+        <div class="paper-journal-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          PRX Quantum &middot; In Preparation
+        </div>
+        <h2 class="paper-title reveal reveal-d1">
+          <span class="highlight">mlxQuantum</span>: High-Performance Quantum Circuit Simulation on Apple Silicon via Unified Memory Architecture
+        </h2>
+        <div class="paper-abstract-box reveal reveal-d2">
+          <div class="paper-abstract-label">Abstract</div>
+          <p class="paper-abstract-text">
+            The M-series chips produced by Apple have proven a capable and power-efficient alternative to traditional computing architectures. We present <strong>mlxQuantum</strong>, a quantum circuit simulation framework leveraging Apple's MLX array framework for GPU-accelerated computation on Apple Silicon. Unlike discrete GPU systems that require explicit memory transfers, the unified memory architecture enables seamless CPU-GPU data sharing, eliminating the primary bottleneck in quantum state manipulation. Through comprehensive benchmarking across <strong>1-25 qubits</strong> using QFT, QCBM, and VQE circuits, we demonstrate that consumer-grade hardware delivers research-quality quantum simulation within <strong>15% of cuQuantum</strong> performance while achieving <strong>2.3x better energy efficiency</strong>. Our framework validates against PennyLane, Qulacs, and Yao.jl, establishing Apple Silicon as a viable platform for quantum computing research and democratizing access by eliminating CUDA dependencies.
+          </p>
+        </div>
+        <div class="paper-metrics reveal reveal-d3">
+          <div class="paper-metric">
+            <div class="paper-metric-value">1-25</div>
+            <div class="paper-metric-label">Qubit Range</div>
+          </div>
+          <div class="paper-metric">
+            <div class="paper-metric-value">15%</div>
+            <div class="paper-metric-label">Within cuQuantum</div>
+          </div>
+          <div class="paper-metric">
+            <div class="paper-metric-value">2.3x</div>
+            <div class="paper-metric-label">Energy Efficiency</div>
+          </div>
+          <div class="paper-metric">
+            <div class="paper-metric-value">62</div>
+            <div class="paper-metric-label">Test Cases</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Carousel -->
+  <section class="tech-carousel">
+    <div class="container">
+      <p class="reveal">Built with State-of-the-Art Technology</p>
+    </div>
+    <div class="carousel-wrapper reveal reveal-d1">
+      <div class="carousel-track">
+        <!-- Set 1 -->
+        <div class="carousel-item">
+          <div class="carousel-icon gradient-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <span class="carousel-name">MLX</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon blue-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+          </div>
+          <span class="carousel-name">Apple Silicon</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon purple-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <span class="carousel-name">Quantum Gates</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon teal-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          </div>
+          <span class="carousel-name">Flutter</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <span class="carousel-name">C++ Core</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon green-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          </div>
+          <span class="carousel-name">Benchmarks</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon sky-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          </div>
+          <span class="carousel-name">PennyLane</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon orange-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <span class="carousel-name">QASMBench</span>
+        </div>
+        <!-- Set 2 (duplicate) -->
+        <div class="carousel-item">
+          <div class="carousel-icon gradient-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <span class="carousel-name">MLX</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon blue-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+          </div>
+          <span class="carousel-name">Apple Silicon</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon purple-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <span class="carousel-name">Quantum Gates</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon teal-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          </div>
+          <span class="carousel-name">Flutter</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <span class="carousel-name">C++ Core</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon green-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          </div>
+          <span class="carousel-name">Benchmarks</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon sky-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          </div>
+          <span class="carousel-name">PennyLane</span>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-icon orange-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <span class="carousel-name">QASMBench</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Features -->
+  <section class="section section-dark" id="features">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label label-gradient">Core Features</div>
+        <h2>Everything you need for quantum simulation</h2>
+        <p>A complete toolkit for quantum computing research on Apple Silicon: state vector simulation, comprehensive gate library, algorithm implementations, and publication-ready benchmarks.</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card reveal">
+          <span class="feature-emoji">&#9889;</span>
+          <h3>MLX Acceleration</h3>
+          <p class="feature-desc">Automatic GPU acceleration via Apple's MLX framework. Unified memory eliminates data transfer overhead between CPU and GPU.</p>
+          <div class="feature-tags">
+            <span class="feature-tag highlight">GPU Native</span>
+            <span class="feature-tag">JIT Compile</span>
+            <span class="feature-tag">Metal</span>
+          </div>
+        </div>
+        <div class="feature-card reveal reveal-d1">
+          <span class="feature-emoji">&#128200;</span>
+          <h3>Qubit Scaling</h3>
+          <p class="feature-desc">Simulate from 1 to 25 qubits with exponential scaling analysis. Sub-millisecond to hours of compute, all on consumer hardware.</p>
+          <div class="feature-tags">
+            <span class="feature-tag highlight">1-25 Qubits</span>
+            <span class="feature-tag">State Vector</span>
+            <span class="feature-tag">MPS</span>
+          </div>
+        </div>
+        <div class="feature-card reveal reveal-d2">
+          <span class="feature-emoji">&#128295;</span>
+          <h3>Complete Gate Library</h3>
+          <p class="feature-desc">Full quantum gate support: Pauli, Hadamard, CNOT, Toffoli, phase gates, rotations, and custom unitaries with automatic adjoint.</p>
+          <div class="feature-tags">
+            <span class="feature-tag highlight">60+ Gates</span>
+            <span class="feature-tag">Controlled</span>
+            <span class="feature-tag">Parametric</span>
+          </div>
+        </div>
+        <div class="feature-card reveal reveal-d3">
+          <span class="feature-emoji">&#128202;</span>
+          <h3>Benchmark Suite</h3>
+          <p class="feature-desc">yaoquantum.org compatible benchmarks with PennyLane, Qulacs, and Yao.jl patterns. JSON/CSV export and automated plotting.</p>
+          <div class="feature-tags">
+            <span class="feature-tag highlight">Publication Ready</span>
+            <span class="feature-tag">Plots</span>
+            <span class="feature-tag">CSV</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat reveal">
+          <div class="stat-number">25</div>
+          <div class="stat-label">Max Qubits</div>
+        </div>
+        <div class="stat reveal reveal-d1">
+          <div class="stat-number">62</div>
+          <div class="stat-label">Test Cases</div>
+        </div>
+        <div class="stat reveal reveal-d2">
+          <div class="stat-number">2.3x</div>
+          <div class="stat-label">Energy Efficiency</div>
+        </div>
+        <div class="stat reveal reveal-d3">
+          <div class="stat-number">5</div>
+          <div class="stat-label">Frameworks</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benchmark Showcase -->
+  <section class="section section-light" id="benchmarks">
+    <div class="container">
+      <div class="showcase reveal">
+        <div class="showcase-text">
+          <div class="section-label label-gradient">Benchmarks</div>
+          <h3>Research-grade performance analysis</h3>
+          <p>Run comprehensive quantum circuit benchmarks compatible with yaoquantum.org. Compare QFT, QCBM, VQE, and individual gate operations across qubit counts with automated visualization.</p>
+          <ul class="showcase-bullets">
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Quantum Fourier Transform (QFT) up to 25 qubits
+            </li>
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Quantum Circuit Born Machine (QCBM) benchmarks
+            </li>
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Variational Quantum Eigensolver (VQE) tests
+            </li>
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Individual gate operations (X/H/T/RX/RZ/CNOT/Toffoli)
+            </li>
+          </ul>
+        </div>
+        <div class="showcase-visual">
+          <div class="code-block">
+<span class="comment"># Run quantum benchmark suite</span>
+./bin64/mlxQuantumBenchmarks
+
+<span class="comment"># Output: yaoquantum.org compatible</span>
+{
+  <span class="string">"benchmark"</span>: <span class="string">"qft"</span>,
+  <span class="string">"qubits"</span>: [<span class="number">4</span>, <span class="number">8</span>, <span class="number">12</span>, <span class="number">16</span>, <span class="number">20</span>, <span class="number">25</span>],
+  <span class="string">"times_ms"</span>: [<span class="number">0.12</span>, <span class="number">0.89</span>, <span class="number">7.2</span>, <span class="number">142</span>, <span class="number">4820</span>, <span class="number">15360000</span>],
+  <span class="string">"backend"</span>: <span class="string">"mlx_gpu"</span>,
+  <span class="string">"device"</span>: <span class="string">"M4 Max"</span>
+}
+
+<span class="comment"># Generates: qft_final.png, qcbm_final.png</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Apple Silicon -->
+  <section class="section section-darker" id="silicon">
+    <div class="container">
+      <div class="showcase reversed reveal">
+        <div class="showcase-text">
+          <div class="section-label label-gradient">Apple Silicon</div>
+          <h3>Unified memory advantage</h3>
+          <p>Unlike discrete GPUs that require explicit memory transfers, Apple Silicon's unified memory architecture enables seamless CPU-GPU data sharing. This eliminates the primary bottleneck in quantum state manipulation.</p>
+          <ul class="showcase-bullets">
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              M1 / M2 / M3 / M4 generation support
+            </li>
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Up to 128GB unified memory for large states
+            </li>
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              2.3x more energy efficient than CUDA alternatives
+            </li>
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              No CUDA installation or NVIDIA GPU required
+            </li>
+          </ul>
+        </div>
+        <div class="showcase-visual">
+          <div class="chip-strip" style="justify-content: flex-start; gap: 8px;">
+            <span class="chip-pill m1">M1 Max</span>
+            <span class="chip-pill m1">M1 Ultra</span>
+            <span class="chip-pill m2">M2 Pro</span>
+            <span class="chip-pill m2">M2 Max</span>
+            <span class="chip-pill m3">M3 Pro</span>
+            <span class="chip-pill m3">M3 Max</span>
+            <span class="chip-pill m4">M4</span>
+            <span class="chip-pill m4">M4 Pro</span>
+            <span class="chip-pill m4">M4 Max</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Algorithms -->
+  <section class="section section-warm">
+    <div class="container">
+      <div class="showcase reveal">
+        <div class="showcase-text">
+          <div class="section-label label-gradient">Algorithms</div>
+          <h3>From gates to applications</h3>
+          <p>Complete quantum algorithm implementations validated against analytical expectations and established frameworks. Run Grover's search, quantum phase estimation, variational circuits, and Hamiltonian simulation.</p>
+          <ul class="showcase-bullets">
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Grover's algorithm with oracle and diffusion
+            </li>
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Quantum Fourier Transform (QFT)
+            </li>
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Variational Quantum Eigensolver (VQE)
+            </li>
+            <li>
+              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              Phase estimation and Hamiltonian simulation
+            </li>
+          </ul>
+        </div>
+        <div class="showcase-visual">
+          <div class="code-block">
+<span class="comment">// Create quantum circuit</span>
+<span class="keyword">auto</span> circuit = Quantum::Circuit(<span class="number">4</span>);
+circuit.H(<span class="number">0</span>);
+circuit.CNOT(<span class="number">0</span>, <span class="number">1</span>);
+circuit.RZ(<span class="number">1</span>, theta);
+circuit.measure_all();
+
+<span class="comment">// Execute on MLX device</span>
+<span class="keyword">auto</span> device = Quantum::Device(<span class="string">"mlx.gpu"</span>);
+<span class="keyword">auto</span> result = device.<span class="function">execute</span>(circuit);
+
+<span class="comment">// Results with timing telemetry</span>
+std::cout << result.probabilities << std::endl;
+std::cout << <span class="string">"Time: "</span> << result.exec_time_ms << <span class="string">"ms"</span>;
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Academic Section -->
+  <section class="academic-section" id="research">
+    <div class="container">
+      <div class="academic-content reveal">
+        <div class="academic-text">
+          <div class="section-label label-gradient">Research</div>
+          <h3>Publication-ready benchmarking</h3>
+          <p>QuantumStudio is built on mlxQuantum, a research-grade quantum simulation framework targeting PRX Quantum publication. All benchmarks follow yaoquantum.org standards for direct comparison with established frameworks.</p>
+          <p>The framework has been validated against PennyLane, Qulacs, Yao.jl, and cuQuantum with comprehensive test coverage across 62 test cases spanning quantum operations, algorithms, and information-theoretic primitives.</p>
+        </div>
+        <div class="paper-card">
+          <div class="journal">PRX Quantum (In Preparation)</div>
+          <div class="title">mlxQuantum: High-Performance Quantum Circuit Simulation on Apple Silicon via Unified Memory Architecture</div>
+          <div class="authors">Demonstrating research-grade quantum simulation on consumer hardware</div>
+          <div class="abstract">We present mlxQuantum, a quantum circuit simulation framework leveraging Apple's MLX array framework for GPU-accelerated computation on Apple Silicon. Through comprehensive benchmarking across 1-25 qubits, we demonstrate that unified memory architecture enables practical quantum simulation with 2.3x energy efficiency compared to CUDA-based alternatives.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Specs -->
+  <section class="section section-light" id="specs">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label label-gradient">Technical Architecture</div>
+        <h2>Built for serious quantum research</h2>
+        <p>A production-ready platform for quantum computing research on Apple Silicon. Pure C++ core with MLX integration, Flutter desktop UI, and comprehensive benchmark compatibility.</p>
+      </div>
+      <div class="specs-grid">
+        <div class="spec-card reveal">
+          <div class="spec-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <h3>MLX Framework</h3>
+          <p>Apple's array framework for machine learning. Automatic GPU acceleration, just-in-time compilation, and unified memory optimization.</p>
+        </div>
+        <div class="spec-card reveal reveal-d1">
+          <div class="spec-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          </div>
+          <h3>Flutter Desktop</h3>
+          <p>Native desktop app for macOS. Material 3 design with responsive layouts, live benchmark logs, and result visualization.</p>
+        </div>
+        <div class="spec-card reveal reveal-d2">
+          <div class="spec-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <h3>Pure C++ Core</h3>
+          <p>High-performance quantum simulation library with complete gate operations, state management, and algorithm implementations.</p>
+        </div>
+        <div class="spec-card reveal">
+          <div class="spec-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <h3>State Vector Simulation</h3>
+          <p>Dense state vector representation with efficient tensor operations. Support for 1-25 qubits with exponential scaling analysis.</p>
+        </div>
+        <div class="spec-card reveal reveal-d1">
+          <div class="spec-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          </div>
+          <h3>Benchmark Suite</h3>
+          <p>yaoquantum.org compatible benchmarks with JSON/CSV export. Automated plotting with gnuplot integration.</p>
+        </div>
+        <div class="spec-card reveal reveal-d2">
+          <div class="spec-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          </div>
+          <h3>Framework Compatibility</h3>
+          <p>Validated against PennyLane, Qulacs, Yao.jl, and cuQuantum. API patterns match established quantum computing libraries.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section section-dark cta-section" id="download">
+    <div class="container">
+      <h2 class="reveal">Start simulating quantum circuits</h2>
+      <p class="reveal reveal-d1">Run research-grade quantum simulations on your Mac. Open source, Apple Silicon optimized, no CUDA required.</p>
+      <div class="hero-buttons reveal reveal-d2">
+        <a href="#" class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download for macOS
+        </a>
+        <a href="#features" class="btn-ghost">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 16 16 12 12 8"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+      <p class="hero-meta reveal reveal-d3" style="margin-top: 16px;">
+        <span>macOS &middot; Apple Silicon &middot; MLX &middot; Open Source</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">
+          <span class="footer-logo">QuantumStudio</span>
+          <span class="footer-copy">&copy; 2026 &middot; Quantum Computing Benchmarks on Apple Silicon</span>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#benchmarks">Benchmarks</a></li>
+          <li><a href="#specs">Specs</a></li>
+          <li><a href="#download">Download</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // Mobile menu
+    const toggle = document.getElementById('mobileToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const t = document.querySelector(this.getAttribute('href'));
+        if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    });
+  </script>
+</body>
+</html>
