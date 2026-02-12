@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy — QuantumStudio</title>
-  <meta name="description" content="Privacy Policy for QuantumStudio - Quantum Computing Benchmarks on Apple Silicon.">
+  <meta name="description" content="Privacy Policy for QuantumStudio.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,6 +12,7 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --bg: #ffffff;
+      --bg-subtle: #f8fafc;
       --text: #0f172a;
       --text-muted: #64748b;
       --accent: #6366f1;
@@ -36,43 +37,172 @@
     a:hover { text-decoration: underline; }
     .back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 32px; font-weight: 500; }
     .last-updated { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.875rem; }
+    pre.license-text {
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      white-space: pre-wrap;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+  </style>
+  <style>
+    /* Theme Toggle */
+    .theme-toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      background: var(--bg-subtle, #f8fafc);
+      border-radius: 999px;
+      border: 1px solid var(--border, #e5e7eb);
+    }
+
+    .theme-toggle-float {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .theme-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text-dim, #64748b);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .theme-btn:hover {
+      color: var(--text, #0f172a);
+    }
+
+    .theme-btn.active {
+      background: var(--accent, #2563eb);
+      color: #ffffff;
+    }
+
+    [data-theme="dark"] .theme-toggle-group {
+      background: var(--bg-subtle, #1e293b);
+      border-color: var(--border, #334155);
+    }
+
+    [data-theme="dark"] .theme-btn.active {
+      color: var(--bg, #0f172a);
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0f172a;
+      --bg-subtle: #1e293b;
+      --border: #334155;
+      --border-hover: #475569;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #7aa2f7;
+      --accent-dark: #7aa2f7;
+    }
+
+    /* Dark Theme Base */
+    [data-theme="dark"] body {
+      background: var(--bg, #0f172a);
+      color: var(--text, #f1f5f9);
+    }
+
+    [data-theme="dark"] a {
+      color: var(--accent, #7aa2f7);
+    }
   </style>
 </head>
 <body>
+  <div class="theme-toggle-group theme-toggle-float">
+    <button class="theme-btn" data-theme-value="light" aria-label="Light mode">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+    <button class="theme-btn" data-theme-value="dark" aria-label="Dark mode">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
+
   <div class="container">
-    <a href="index.html" class="back-link">← Back to QuantumStudio</a>
+    <a href="index.html" class="back-link">&larr; Back to QuantumStudio</a>
 
     <h1>Privacy Policy</h1>
     <p class="subtitle">Your privacy matters to us</p>
 
     <h2>1. Introduction</h2>
-    <p>QuantumStudio ("we," "our," or "us") respects your privacy and is committed to protecting it. This Privacy Policy explains how we handle information when you use our application.</p>
+    <p>QuantumStudio ("we," "our," or "us") respects your privacy and is committed to protecting it. This Privacy Policy explains how we handle information when you use the app.</p>
 
     <h2>2. Information Collection</h2>
-    <p>QuantumStudio is designed to be privacy-first. We do not collect, store, or transmit any personal data to external servers. All quantum circuit simulations and benchmarks are performed entirely on your device.</p>
+    <p>The app is designed to be local-first. We do not collect personal information by default. We do not track usage behavior or sell data to third parties. Your content remains on your device unless you choose to share it.</p>
 
-    <h2>3. Local Processing</h2>
-    <p>All quantum computing simulations, including QFT, VQE, and QCBM benchmarks, are executed locally on your Apple Silicon device using MLX GPU acceleration. No computation data is sent to external servers.</p>
+    <h2>3. On-Device Processing</h2>
+    <p>AI features run locally using on-device models. Your content is processed entirely on your device and is not sent to external servers for processing.</p>
 
-    <h2>4. Benchmark Results</h2>
-    <p>Benchmark results and performance data are stored locally on your device. We do not collect or aggregate benchmark data from users.</p>
+    <h2>4. Data Storage</h2>
+    <p>Files you import or generate are stored locally in locations you select. You control when and how to delete or share this data.</p>
 
-    <h2>5. Data Security</h2>
-    <p>Since all data is processed and stored locally on your device, the security of your data relies on the security of your device.</p>
+    <h2>5. Third-Party Services</h2>
+    <p>The app may utilize system-level services provided by your operating system. Optional update or license checks may transmit basic app and device metadata (such as version and OS information), but no user content is transmitted. If third-party services are enabled in future releases, this policy will be updated accordingly.</p>
 
-    <h2>6. Third-Party Services</h2>
-    <p>The application utilizes Apple's MLX framework for GPU acceleration. This is a local computation framework and does not transmit data externally.</p>
+    <h2>6. Data Security</h2>
+    <p>Since data stays on your device, its security depends on your device security settings. We recommend using passcodes or biometrics where available.</p>
 
     <h2>7. Children's Privacy</h2>
-    <p>Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from children under 13.</p>
+    <p>The Service does not address anyone under the age of 13. We do not knowingly collect personal information from children under 13.</p>
 
     <h2>8. Changes to This Privacy Policy</h2>
-    <p>We may update our Privacy Policy from time to time. Any changes will be posted on this page.</p>
+    <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy and updating the "Last updated" date.</p>
 
     <h2>9. Contact Us</h2>
-    <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:tripflow.contact@gmail.com">tripflow.contact@gmail.com</a>.</p>
+    <p>If you have any questions about this Privacy Policy, contact us at <a href="mailto:solomon@qneura.ai">solomon@qneura.ai</a>.</p>
 
     <p class="last-updated">Last updated: February 2026</p>
   </div>
+  <script>
+    (function() {
+      const themeButtons = document.querySelectorAll('.theme-btn');
+      if (!themeButtons.length) {
+        return;
+      }
+      const storedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', initialTheme);
+      themeButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.themeValue === initialTheme);
+        btn.addEventListener('click', () => {
+          const theme = btn.dataset.themeValue;
+          document.documentElement.setAttribute('data-theme', theme);
+          localStorage.setItem('theme', theme);
+          themeButtons.forEach(b => b.classList.toggle('active', b === btn));
+        });
+      });
+    })();
+  </script>
+
 </body>
 </html>

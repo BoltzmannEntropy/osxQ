@@ -1277,8 +1277,164 @@
       .stats-row { grid-template-columns: 1fr; }
     }
   </style>
+  <style>
+    /* Theme Toggle */
+    .theme-toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      background: var(--bg-subtle, #f8fafc);
+      border-radius: 999px;
+      border: 1px solid var(--border, #e5e7eb);
+    }
+
+    .theme-toggle-float {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .theme-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text-dim, #64748b);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .theme-btn:hover {
+      color: var(--text, #0f172a);
+    }
+
+    .theme-btn.active {
+      background: var(--accent, #2563eb);
+      color: #ffffff;
+    }
+
+    [data-theme="dark"] .theme-toggle-group {
+      background: var(--bg-subtle, #1e293b);
+      border-color: var(--border, #334155);
+    }
+
+    [data-theme="dark"] .theme-btn.active {
+      color: var(--bg, #0f172a);
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0f172a;
+      --bg-subtle: #1e293b;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --border: #334155;
+      --border-hover: #475569;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --surface-light: #1e293b;
+      --surface-warm: #1e293b;
+      --surface-border: #334155;
+      --text-dark: #f1f5f9;
+      --text-dark-muted: #94a3b8;
+      --accent: var(--accent-mid);
+      --accent-dark: var(--accent-mid);
+    }
+
+    /* Dark Theme Base */
+    [data-theme="dark"] body {
+      background: var(--bg, #0f172a);
+      color: var(--text, #f1f5f9);
+    }
+
+    [data-theme="dark"] a {
+      color: var(--accent, #7aa2f7);
+    }
+
+    [data-theme="dark"] nav.scrolled {
+      background: rgba(15, 23, 42, 0.85);
+      border-bottom-color: var(--border, #334155);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] header,
+    [data-theme="dark"] .site-header,
+    [data-theme="dark"] .header,
+    [data-theme="dark"] .site-header *,
+    [data-theme="dark"] .header * {
+      color: var(--text, #f1f5f9);
+    }
+
+    [data-theme="dark"] .tab {
+      background-color: #1c232d;
+      border-color: #2b3340;
+    }
+
+    [data-theme="dark"] .tab button:hover {
+      background-color: #2a3341;
+    }
+
+    [data-theme="dark"] .tab button.active {
+      background-color: #323d4f;
+    }
+
+    [data-theme="dark"] .tabcontent {
+      border-color: #2b3340;
+    }
+
+    [data-theme="dark"] .audio-label {
+      color: var(--text-muted, #94a3b8);
+    }
+
+    [data-theme="dark"] audio {
+      background-color: #1f2937;
+      border-color: #334155;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] audio::-webkit-media-controls-panel {
+      background-color: #1f2937;
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] audio::-webkit-media-controls-play-button,
+    [data-theme="dark"] audio::-webkit-media-controls-volume-slider,
+    [data-theme="dark"] audio::-webkit-media-controls-seek-bar {
+      color: #93c5fd;
+    }
+  </style>
+
 </head>
 <body>
+  <div class="theme-toggle-group theme-toggle-float">
+    <button class="theme-btn" data-theme-value="light" aria-label="Light mode">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/>
+      <line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/>
+      <line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+    </button>
+    <button class="theme-btn" data-theme-value="dark" aria-label="Dark mode">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+    </button>
+  </div>
+
 
   <!-- Nav -->
   <nav id="nav">
@@ -1954,7 +2110,7 @@ std::cout << <span class="string">"Time: "</span> << result.exec_time_ms << <spa
       <div class="footer-inner">
         <div class="footer-left">
           <span class="footer-logo">QuantumStudio</span>
-          <span class="footer-copy">&copy; 2026 &middot; Quantum Computing Benchmarks on Apple Silicon &middot; Made by Shlomo Kashani, Head of AI at <a href="https://qneura.ai/apps.html" style="color: var(--accent);">Qneura</a> &middot; <a href="mailto:shlomo@qneura.ai" style="color: var(--accent);">Contact</a></span>
+          <span class="footer-copy">&copy; 2026 &middot; Quantum Computing Benchmarks on Apple Silicon &middot; Made by Shlomo Kashani, Head of AI at <a href="https://qneura.ai/apps.html" style="color: var(--accent);">Qneura</a> &middot; <a href="mailto:solomon@qneura.ai" style="color: var(--accent);">Contact</a></span>
         </div>
         <ul class="footer-links">
           <li><a href="#features">Features</a></li>
@@ -1994,5 +2150,30 @@ std::cout << <span class="string">"Time: "</span> << result.exec_time_ms << <spa
       });
     });
   </script>
+  <script>
+    (function() {
+      const themeButtons = document.querySelectorAll('.theme-btn');
+      if (!themeButtons.length) {
+        return;
+      }
+      const storedTheme = localStorage.getItem('theme');
+      const existingTheme = document.documentElement.getAttribute('data-theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme = storedTheme || existingTheme || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', initialTheme);
+      themeButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.themeValue === initialTheme);
+      });
+      themeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const theme = btn.dataset.themeValue;
+          document.documentElement.setAttribute('data-theme', theme);
+          localStorage.setItem('theme', theme);
+          themeButtons.forEach(b => b.classList.toggle('active', b === btn));
+        });
+      });
+    })();
+  </script>
+
 </body>
 </html>
