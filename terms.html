@@ -124,6 +124,176 @@
       color: var(--accent, #7aa2f7);
     }
   </style>
+
+  <style>
+/* Modern Footer */
+.modern-footer {
+  background: var(--footer-bg, #f7f2ec);
+  border-top: 1px solid var(--footer-border, #e5ded5);
+  padding: 48px 0 24px;
+}
+
+.modern-footer .footer-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.modern-footer .footer-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 2.2fr) repeat(3, minmax(140px, 1fr));
+  gap: 32px;
+}
+
+.modern-footer .footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modern-footer .footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.modern-footer .footer-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #9bd0c6, #a5b9f6);
+  color: #1f2937;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.modern-footer .footer-desc {
+  color: var(--text-muted, #6b6b6b);
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+.modern-footer .footer-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text, #2b2b2b);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.modern-footer .footer-email:hover {
+  color: var(--accent, #2563eb);
+}
+
+.modern-footer .footer-col h4 {
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted, #7b7b7b);
+  margin-bottom: 12px;
+}
+
+.modern-footer .footer-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modern-footer .footer-links a {
+  color: var(--text, #2b2b2b);
+  text-decoration: none;
+}
+
+.modern-footer .footer-links a:hover {
+  color: var(--accent, #2563eb);
+}
+
+.modern-footer .footer-bottom {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--footer-border, #e5ded5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: var(--text-muted, #6b6b6b);
+  font-size: 0.9rem;
+}
+
+.modern-footer .footer-bottom a {
+  color: var(--accent, #2563eb);
+  text-decoration: none;
+}
+
+.modern-footer .footer-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.modern-footer .footer-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--footer-border, #e5ded5);
+  background: var(--footer-pill, #ffffff);
+  font-size: 0.78rem;
+  color: var(--text-muted, #6b6b6b);
+}
+
+[data-theme="dark"] .modern-footer {
+  background: #0b1220;
+  border-color: #1f2a3a;
+}
+
+[data-theme="dark"] .modern-footer .footer-mark {
+  color: #0f172a;
+}
+
+[data-theme="dark"] .modern-footer .footer-email,
+[data-theme="dark"] .modern-footer .footer-links a {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .modern-footer .footer-desc,
+[data-theme="dark"] .modern-footer .footer-bottom,
+[data-theme="dark"] .modern-footer .footer-col h4 {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .modern-footer .footer-badge {
+  background: #0f172a;
+  border-color: #1f2a3a;
+  color: #94a3b8;
+}
+
+@media (max-width: 900px) {
+  .modern-footer .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .modern-footer .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modern-footer .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+  </style>
 </head>
 <body>
   <div class="theme-toggle-group theme-toggle-float">
@@ -214,5 +384,53 @@
   </script>
 
   <script src="privacy-consent.js"></script>
+  <footer class="modern-footer">
+    <div class="footer-wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="footer-mark">Q</span>
+            <span class="footer-name">QuantumStudio</span>
+          </div>
+          <p class="footer-desc">Quantum circuit benchmarks and simulations for Apple Silicon.</p>
+          <a class="footer-email" href="mailto:solomon@qneura.ai">solomon@qneura.ai</a>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul class="footer-links">
+          <li><a href="index.html#features">Features</a></li>
+          <li><a href="index.html#benchmarks">Benchmarks</a></li>
+          <li><a href="index.html#specs">Specs</a></li>
+          <li><a href="index.html#download">Download</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul class="footer-links">
+          <li><a href="https://github.com/BoltzmannEntropy/osxQ" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="index.html#download">Download</a></li>
+          <li><a href="mailto:solomon@qneura.ai">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul class="footer-links">
+          <li><a href="privacy.html">Privacy</a></li>
+          <li><a href="terms.html">Terms</a></li>
+          <li><a href="license.html">License</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 QuantumStudio. All rights reserved.</div>
+        <div>Made with &hearts; for quantum builders. <a href="https://qneura.ai/apps.html" target="_blank" rel="noopener">QNeura.ai</a></div>
+        <div class="footer-badges">
+        <span class="footer-badge">macOS</span>
+        <span class="footer-badge">Apple Silicon</span>
+        <span class="footer-badge">MLX</span>
+        </div>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
