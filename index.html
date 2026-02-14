@@ -158,9 +158,21 @@
     .hero {
       position: relative;
       padding: 150px 0 80px;
-      text-align: center;
       overflow: hidden;
       background: var(--bg);
+    }
+
+    .hero .container {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 48px;
+      align-items: center;
+    }
+
+    .hero-content {
+      text-align: left;
+      position: relative;
+      z-index: 1;
     }
 
     .hero::before {
@@ -232,6 +244,11 @@
       z-index: 1;
     }
 
+    .hero-content h1 {
+      margin-left: 0;
+      margin-right: 0;
+    }
+
     .hero h1 .grad {
       background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 60%, #6bb8d9 100%);
       -webkit-background-clip: text;
@@ -249,6 +266,10 @@
       z-index: 1;
     }
 
+    .hero-content .hero-sub {
+      margin: 0 0 44px;
+    }
+
     .hero-buttons {
       display: flex;
       align-items: center;
@@ -258,6 +279,10 @@
       margin-bottom: 12px;
       position: relative;
       z-index: 1;
+    }
+
+    .hero-content .hero-buttons {
+      justify-content: flex-start;
     }
 
     .btn-primary {
@@ -324,8 +349,8 @@
     /* ===== Hero Illustration ===== */
     .hero-illustration {
       position: relative;
-      max-width: 900px;
-      margin: 56px auto 0;
+      max-width: 100%;
+      margin: 0;
       padding: 48px;
       border-radius: var(--radius-lg);
       border: 1px solid var(--border);
@@ -335,6 +360,13 @@
         0 24px 80px rgba(0, 0, 0, 0.08),
         0 0 60px rgba(77, 124, 138, 0.06);
       z-index: 1;
+    }
+
+    .hero-illustration img {
+      width: 100%;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid var(--border);
     }
 
     .arch-diagram {
@@ -1230,6 +1262,14 @@
 
     /* ===== Responsive ===== */
     @media (max-width: 1024px) {
+      .hero .container {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .hero-content { text-align: center; }
+      .hero-content h1 { margin-left: auto; margin-right: auto; }
+      .hero-content .hero-sub { margin-left: auto; margin-right: auto; }
+      .hero-content .hero-buttons { justify-content: center; }
       .feature-grid { grid-template-columns: repeat(2, 1fr); }
       .specs-grid { grid-template-columns: repeat(2, 1fr); }
       .stats-row { grid-template-columns: repeat(2, 1fr); }
