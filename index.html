@@ -3,1251 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QuantumStudio — Quantum Computing Benchmarks on Apple Silicon</title>
-  <meta name="description" content="High-performance quantum circuit simulation on Apple Silicon. Run QFT, VQE, QCBM benchmarks using MLX GPU acceleration. No CUDA required.">
-  <meta property="og:title" content="QuantumStudio — Quantum Computing Benchmarks on Apple Silicon">
-  <meta property="og:description" content="Democratizing quantum computing research. Run state-of-the-art quantum simulations on your MacBook with MLX acceleration.">
+  <title>QuantumStudio - Read Quantum Systems Clearly</title>
+  <meta name="description" content="QuantumStudio brings clean, native quantum benchmarking to macOS with MLX acceleration, elegant workflows, and publication-ready results.">
+  <meta property="og:title" content="QuantumStudio - Read Quantum Systems Clearly">
+  <meta property="og:description" content="A clean macOS experience for running quantum benchmarks on Apple Silicon.">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
     :root {
-      --bg: #ffffff;
-      --bg-subtle: #f8fafc;
-      --bg-card: #ffffff;
-      --bg-card-hover: #f8fafc;
-      --border: #e2e8f0;
-      --border-hover: #cbd5e1;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --text-dim: #94a3b8;
-      --accent: #4D7C8A;
-      --accent-dark: #3d6270;
-      --accent-mid: #5E97A8;
-      --accent-soft: #e8f4f7;
-      --accent-purple: #3a6d7a;
-      --accent-purple-dark: #2d545f;
-      --glow: rgba(77, 124, 138, 0.12);
-      --glow-soft: rgba(77, 124, 138, 0.06);
-      --surface-light: #f9fafb;
-      --surface-warm: #f1f5f9;
-      --surface-border: #e2e8f0;
-      --text-dark: #0f172a;
-      --text-dark-muted: #64748b;
-      --radius: 16px;
-      --radius-lg: 24px;
+      --bg: #f4f6f4;
+      --bg-soft: #eff3f0;
+      --surface: #ffffff;
+      --surface-subtle: #f8faf8;
+      --text: #181b1c;
+      --text-muted: #677075;
+      --line: #dce3df;
+      --line-strong: #cdd6d1;
+      --accent: #71b9a5;
+      --accent-strong: #4f9d88;
+      --accent-soft: #e5f5ef;
+      --shadow: 0 28px 56px rgba(16, 24, 28, 0.12);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+      --content: 1180px;
     }
 
-    html { scroll-behavior: smooth; }
+    [data-theme="dark"] {
+      --bg: #0f1415;
+      --bg-soft: #151d1e;
+      --surface: #172022;
+      --surface-subtle: #1b2628;
+      --text: #edf2ef;
+      --text-muted: #a6b4b0;
+      --line: #293739;
+      --line-strong: #334346;
+      --accent: #73c4ad;
+      --accent-strong: #8de0c7;
+      --accent-soft: #243a34;
+      --shadow: 0 28px 56px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
-      background: var(--bg);
-      line-height: 1.6;
+      background:
+        radial-gradient(1200px 700px at 92% 2%, rgba(113, 185, 165, 0.18) 0%, rgba(113, 185, 165, 0) 58%),
+        radial-gradient(900px 580px at 0% 100%, rgba(113, 185, 165, 0.08) 0%, rgba(113, 185, 165, 0) 66%),
+        var(--bg);
+      line-height: 1.58;
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
       overflow-x: hidden;
     }
 
-    a { text-decoration: none; color: inherit; }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
     .container {
-      max-width: 1200px;
+      width: min(var(--content), calc(100% - 48px));
       margin: 0 auto;
-      padding: 0 24px;
     }
 
-    /* ===== Nav ===== */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      padding: 14px 0;
-      transition: all 0.3s;
-      border-bottom: 1px solid transparent;
-    }
-
-    nav.scrolled {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom-color: var(--border);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
-
-    nav .container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
-
-    .nav-logo-icon {
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      color: #fff;
-      font-size: 16px;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-muted);
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: var(--text); }
-
-    .nav-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 20px;
-      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: 100px;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .nav-cta:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 24px rgba(77, 124, 138, 0.3);
-    }
-
-    .mobile-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text);
-      cursor: pointer;
-      padding: 8px;
-    }
-
-    /* ===== Hero ===== */
-    .hero {
-      position: relative;
-      padding: 150px 0 80px;
-      overflow: hidden;
-      background: var(--bg);
-    }
-
-    .hero .container {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-      gap: 48px;
-      align-items: center;
-    }
-
-    .hero-content {
-      text-align: left;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -200px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 900px;
-      height: 900px;
-      background: radial-gradient(circle, rgba(58, 109, 122, 0.08) 0%, rgba(77, 124, 138, 0.05) 40%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 120%;
-      height: 400px;
-      background:
-        repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(77, 124, 138, 0.03) 8px, rgba(77, 124, 138, 0.03) 9px);
-      pointer-events: none;
-      mask-image: radial-gradient(ellipse 50% 100% at 50% 50%, black 0%, transparent 70%);
-      -webkit-mask-image: radial-gradient(ellipse 50% 100% at 50% 50%, black 0%, transparent 70%);
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px 6px 8px;
-      border-radius: 100px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 28px;
-      position: relative;
-      z-index: 1;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    }
-
-    .hero-badge .chip {
-      padding: 3px 10px;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
-      color: #ffffff;
-    }
-
-    .hero h1 {
-      font-size: clamp(42px, 6.5vw, 76px);
-      font-weight: 900;
-      line-height: 1.02;
-      letter-spacing: -0.035em;
-      color: var(--text);
-      margin-bottom: 24px;
-      max-width: 900px;
-      margin-left: auto;
-      margin-right: auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-content h1 {
-      margin-left: 0;
-      margin-right: 0;
-    }
-
-    .hero h1 .grad {
-      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 60%, #6bb8d9 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-sub {
-      font-size: clamp(16px, 2vw, 19px);
-      color: var(--text-muted);
-      max-width: 620px;
-      margin: 0 auto 44px;
-      line-height: 1.65;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-content .hero-sub {
-      margin: 0 0 44px;
-    }
-
-    .hero-buttons {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-content .hero-buttons {
-      justify-content: flex-start;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 15px 30px;
-      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 100px;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(77, 124, 138, 0.3);
-    }
-
-    .btn-primary svg { width: 18px; height: 18px; }
-
-    .btn-ghost {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 15px 30px;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 15px;
-      font-weight: 500;
-      border-radius: 100px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-ghost:hover {
-      color: var(--text);
-      border-color: var(--border-hover);
-      transform: translateY(-1px);
-    }
-
-    .hero-meta {
-      font-size: 13px;
-      color: var(--text-dim);
-      margin-top: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-meta span {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .hero-meta .sep { margin: 0 8px; opacity: 0.4; }
-
-    /* ===== Hero Illustration ===== */
-    .hero-illustration {
-      position: relative;
-      max-width: 100%;
-      margin: 0;
-      padding: 48px;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      background: linear-gradient(135deg, var(--bg-subtle) 0%, var(--bg) 100%);
-      box-shadow:
-        0 0 0 1px rgba(0, 0, 0, 0.02),
-        0 24px 80px rgba(0, 0, 0, 0.08),
-        0 0 60px rgba(77, 124, 138, 0.06);
-      z-index: 1;
-    }
-
-    .hero-illustration img {
-      width: 100%;
-      display: block;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .arch-diagram {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 24px;
-      text-align: center;
-    }
-
-    .arch-box {
-      padding: 24px 16px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .arch-box:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-    }
-
-    .arch-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 12px;
-      background: var(--accent-soft);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .arch-icon svg {
-      width: 24px;
-      height: 24px;
-      color: var(--accent);
-    }
-
-    .arch-icon.gradient-bg {
-      background: linear-gradient(135deg, rgba(58, 109, 122, 0.15) 0%, rgba(77, 124, 138, 0.15) 100%);
-    }
-
-    .arch-icon.gradient-bg svg {
-      color: var(--accent-purple);
-    }
-
-    .arch-box h4 {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-
-    .arch-box p {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    /* ===== Tech Carousel ===== */
-    .tech-carousel {
-      padding: 64px 0 0;
-      text-align: center;
-      overflow: hidden;
-    }
-
-    .tech-carousel p {
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-dim);
-      margin-bottom: 32px;
-    }
-
-    .carousel-wrapper {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .carousel-wrapper::before,
-    .carousel-wrapper::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 120px;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .carousel-wrapper::before {
-      left: 0;
-      background: linear-gradient(to right, var(--bg) 0%, transparent 100%);
-    }
-
-    .carousel-wrapper::after {
-      right: 0;
-      background: linear-gradient(to left, var(--bg) 0%, transparent 100%);
-    }
-
-    .carousel-track {
-      display: flex;
-      align-items: center;
-      gap: 40px;
-      width: max-content;
-      animation: carousel-scroll 40s linear infinite;
-    }
-
-    .carousel-track:hover {
-      animation-play-state: paused;
-    }
-
-    @keyframes carousel-scroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    .carousel-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-      min-width: 90px;
-    }
-
-    .carousel-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 14px;
-      background: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .carousel-icon:hover {
-      transform: scale(1.08);
-      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
-    }
-
-    .carousel-icon svg {
-      width: 28px;
-      height: 28px;
-    }
-
-    .carousel-icon.blue-bg { background: var(--accent); }
-    .carousel-icon.purple-bg { background: var(--accent-purple); }
-    .carousel-icon.gradient-bg { background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%); }
-    .carousel-icon.teal-bg { background: #14b8a6; }
-    .carousel-icon.green-bg { background: #10b981; }
-    .carousel-icon.orange-bg { background: #f97316; }
-    .carousel-icon.rose-bg { background: #f43f5e; }
-    .carousel-icon.sky-bg { background: #0ea5e9; }
-
-    .carousel-name {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    /* ===== Sections ===== */
-    .section { padding: 120px 0; }
-    .section-dark { background: var(--bg); color: var(--text); }
-    .section-darker { background: var(--bg-subtle); color: var(--text); }
-    .section-light { background: var(--surface-light); color: var(--text); }
-    .section-warm { background: var(--surface-warm); color: var(--text); }
-
-    .section-header {
-      text-align: center;
-      max-width: 640px;
-      margin: 0 auto 64px;
-    }
-
-    .section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 16px;
-    }
-
-    .label-gradient {
-      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .section-header h2 {
-      font-size: clamp(28px, 4vw, 46px);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.025em;
-      margin-bottom: 16px;
-      color: var(--text);
-    }
-
-    .section-header p {
-      font-size: 17px;
-      line-height: 1.65;
-      color: var(--text-muted);
-    }
-
-    /* ===== Feature Cards ===== */
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-    }
-
-    .feature-card {
-      padding: 28px 24px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feature-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent-purple), var(--accent));
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--border-hover);
-      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.06);
-    }
-
-    .feature-card:hover::before { opacity: 1; }
-
-    .feature-emoji {
-      font-size: 32px;
-      margin-bottom: 16px;
-      display: block;
-    }
-
-    .feature-card h3 {
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: var(--text);
-    }
-
-    .feature-card .feature-desc {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.5;
-      margin-bottom: 14px;
-    }
-
-    .feature-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .feature-tag {
-      padding: 3px 10px;
-      border-radius: 100px;
-      font-size: 11px;
-      font-weight: 600;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-    }
-
-    .feature-tag.highlight {
-      border-color: var(--accent);
-      color: var(--accent-dark);
-      background: var(--accent-soft);
-    }
-
-    /* ===== Feature Showcase ===== */
-    .showcase {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      align-items: center;
-    }
-
-    .showcase.reversed { direction: rtl; }
-    .showcase.reversed > * { direction: ltr; }
-
-    .showcase-text h3 {
-      font-size: clamp(22px, 3vw, 32px);
-      font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-      margin-bottom: 16px;
-      color: var(--text);
-    }
-
-    .showcase-text p {
-      font-size: 15px;
-      line-height: 1.7;
-      margin-bottom: 20px;
-      color: var(--text-muted);
-    }
-
-    .showcase-bullets {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      list-style: none;
-    }
-
-    .showcase-bullets li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .showcase-bullets .bullet-icon {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 2px;
-      background: var(--accent-soft);
-    }
-
-    .showcase-bullets .bullet-icon svg {
-      width: 12px;
-      height: 12px;
-      color: var(--accent);
-    }
-
-    .showcase-visual {
-      border-radius: var(--radius);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: var(--bg-subtle);
-      padding: 32px;
-      transition: transform 0.4s;
-    }
-
-    .showcase-visual:hover { transform: scale(1.02); }
-
-    .code-block {
-      background: var(--text);
-      border-radius: 12px;
-      padding: 20px;
-      font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-      font-size: 13px;
-      color: #e2e8f0;
-      overflow-x: auto;
-    }
-
-    .code-block .comment { color: #64748b; }
-    .code-block .keyword { color: #c084fc; }
-    .code-block .string { color: #34d399; }
-    .code-block .number { color: #fbbf24; }
-    .code-block .function { color: #60a5fa; }
-
-    /* ===== Paper Abstract Section ===== */
-    .paper-abstract-section {
-      padding: 80px 0;
-      background: linear-gradient(180deg, var(--bg) 0%, rgba(110, 64, 201, 0.03) 100%);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .paper-abstract-container {
-      max-width: 800px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .paper-journal-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: linear-gradient(135deg, rgba(58, 109, 122, 0.1) 0%, rgba(77, 124, 138, 0.1) 100%);
-      border: 1px solid rgba(110, 64, 201, 0.2);
-      border-radius: 100px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--accent-purple);
-      margin-bottom: 24px;
-    }
-
-    .paper-journal-badge svg {
-      width: 14px;
-      height: 14px;
-    }
-
-    .paper-title {
-      font-size: clamp(24px, 3.5vw, 38px);
-      font-weight: 800;
-      line-height: 1.2;
-      color: var(--text);
-      margin-bottom: 32px;
-      letter-spacing: -0.02em;
-    }
-
-    .paper-title .highlight {
-      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .paper-abstract-box {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 32px 40px;
-      text-align: left;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-    }
-
-    .paper-abstract-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--accent-purple);
-      margin-bottom: 12px;
-    }
-
-    .paper-abstract-text {
-      font-size: 16px;
-      line-height: 1.75;
-      color: var(--text-muted);
-    }
-
-    .paper-abstract-text strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .paper-metrics {
-      display: flex;
-      justify-content: center;
-      gap: 32px;
-      margin-top: 32px;
-      flex-wrap: wrap;
-    }
-
-    .paper-metric {
-      text-align: center;
-    }
-
-    .paper-metric-value {
-      font-size: 24px;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .paper-metric-label {
-      font-size: 12px;
-      color: var(--text-dim);
-      font-weight: 500;
-    }
-
-    /* ===== Stats Row ===== */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-      margin-top: 80px;
-    }
-
-    .stat {
-      text-align: center;
-      padding: 32px 16px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-    }
-
-    .stat-number {
-      font-size: 36px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      margin-bottom: 4px;
-      background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .stat-label {
-      font-size: 13px;
-      color: var(--text-dim);
-      font-weight: 500;
-    }
-
-    /* ===== Specs Grid ===== */
-    .specs-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .spec-card {
-      padding: 28px 24px;
-      background: white;
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .spec-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-    }
-
-    .spec-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, rgba(58, 109, 122, 0.12) 0%, rgba(77, 124, 138, 0.12) 100%);
-    }
-
-    .spec-icon svg {
-      width: 22px;
-      height: 22px;
-      color: var(--accent-purple);
-    }
-
-    .spec-card h3 {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-
-    .spec-card p {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    /* ===== Chip Pills ===== */
-    .chip-strip {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 40px;
-    }
-
-    .chip-pill {
-      padding: 6px 16px;
-      border-radius: 100px;
-      font-size: 13px;
-      font-weight: 500;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      transition: border-color 0.2s, color 0.2s;
-    }
-
-    .chip-pill:hover {
-      border-color: var(--border-hover);
-      color: var(--text);
-    }
-
-    .chip-pill.m1 {
-      background: #fef3c7;
-      border-color: #fcd34d;
-      color: #92400e;
-    }
-
-    .chip-pill.m2 {
-      background: #dbeafe;
-      border-color: #60a5fa;
-      color: #1e40af;
-    }
-
-    .chip-pill.m3 {
-      background: #d1fae5;
-      border-color: #34d399;
-      color: #065f46;
-    }
-
-    .chip-pill.m4 {
-      background: #f3e8ff;
-      border-color: #c084fc;
-      color: #6b21a8;
-    }
-
-    /* ===== Academic Section ===== */
-    .academic-section {
-      padding: 80px 0;
-      background: linear-gradient(135deg, rgba(58, 109, 122, 0.03) 0%, rgba(77, 124, 138, 0.03) 100%);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .academic-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      align-items: center;
-    }
-
-    .academic-text h3 {
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 16px;
-    }
-
-    .academic-text p {
-      color: var(--text-muted);
-      margin-bottom: 20px;
-      line-height: 1.7;
-    }
-
-    .paper-card {
-      padding: 24px;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-    }
-
-    .paper-card .journal {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent-purple);
-      margin-bottom: 8px;
-    }
-
-    .paper-card .title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 8px;
-      line-height: 1.4;
-    }
-
-    .paper-card .authors {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .paper-card .abstract {
-      font-size: 13px;
-      color: var(--text-dim);
-      line-height: 1.6;
-    }
-
-    /* ===== CTA ===== */
-    .cta-section {
-      padding: 120px 0;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      background: var(--text);
-      color: #ffffff;
-    }
-
-    .cta-section::before {
-      content: '';
-      position: absolute;
-      bottom: -300px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(circle, rgba(58, 109, 122, 0.2) 0%, rgba(77, 124, 138, 0.1) 40%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .cta-section h2 {
-      font-size: clamp(28px, 4vw, 52px);
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      margin-bottom: 16px;
-      position: relative;
-      z-index: 1;
-      color: #ffffff;
-    }
-
-    .cta-section p {
-      font-size: 17px;
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 40px;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    .cta-section .hero-buttons { position: relative; z-index: 1; }
-
-    .cta-section .btn-primary {
-      background: #ffffff;
-      color: var(--text);
-    }
-
-    .cta-section .btn-primary:hover {
-      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.2);
-    }
-
-    .cta-section .btn-ghost {
-      color: rgba(255, 255, 255, 0.7);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .cta-section .btn-ghost:hover {
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.4);
-    }
-
-    .cta-section .hero-meta {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    /* ===== Footer ===== */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 0;
-      background: var(--bg);
-    }
-
-    .footer-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .footer-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .footer-logo {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .footer-copy {
-      font-size: 13px;
-      color: var(--text-dim);
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 24px;
-      list-style: none;
-    }
-
-    .footer-links a {
-      font-size: 13px;
-      color: var(--text-dim);
-      transition: color 0.2s;
-    }
-
-    .footer-links a:hover { color: var(--text); }
-
-    /* ===== Benchmark Gallery ===== */
-    .benchmark-gallery {
-      margin-top: 40px;
-    }
-
-    .benchmark-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-    }
-
-    .benchmark-item {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .benchmark-item:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.08);
-    }
-
-    .benchmark-item img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .benchmark-caption {
-      padding: 16px 20px;
-    }
-
-    .benchmark-caption h4 {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-
-    .benchmark-caption p {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    @media (max-width: 1024px) {
-      .benchmark-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 768px) {
-      .benchmark-grid { grid-template-columns: 1fr; }
-    }
-
-    /* ===== Screenshot Gallery ===== */
-    .screenshot-gallery {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 24px;
-      margin-top: 40px;
-    }
-
-    .screenshot-item {
-      border-radius: var(--radius);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .screenshot-item:hover {
-      transform: scale(1.02);
-      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
-    }
-
-    .screenshot-item img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    @media (max-width: 768px) {
-      .screenshot-gallery { grid-template-columns: 1fr; }
-    }
-
-    /* ===== Reveal ===== */
     .reveal {
       opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      transform: translateY(20px);
+      transition: opacity 0.66s ease, transform 0.66s ease;
     }
 
     .reveal.visible {
@@ -1255,1212 +92,1005 @@
       transform: translateY(0);
     }
 
-    .reveal-d1 { transition-delay: 0.1s; }
-    .reveal-d2 { transition-delay: 0.2s; }
-    .reveal-d3 { transition-delay: 0.3s; }
-    .reveal-d4 { transition-delay: 0.35s; }
+    .d1 { transition-delay: 0.08s; }
+    .d2 { transition-delay: 0.16s; }
+    .d3 { transition-delay: 0.24s; }
 
-    /* ===== Responsive ===== */
-    @media (max-width: 1024px) {
-      .hero .container {
-        grid-template-columns: 1fr;
-        gap: 32px;
-      }
-      .hero-content { text-align: center; }
-      .hero-content h1 { margin-left: auto; margin-right: auto; }
-      .hero-content .hero-sub { margin-left: auto; margin-right: auto; }
-      .hero-content .hero-buttons { justify-content: center; }
-      .feature-grid { grid-template-columns: repeat(2, 1fr); }
-      .specs-grid { grid-template-columns: repeat(2, 1fr); }
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
-      .showcase { grid-template-columns: 1fr; gap: 32px; }
-      .showcase.reversed { direction: ltr; }
-      .arch-diagram { grid-template-columns: 1fr; }
-      .academic-content { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .mobile-toggle { display: block; }
-
-      .nav-links.open {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: rgba(255, 255, 255, 0.97);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        padding: 20px 24px;
-        gap: 14px;
-        border-bottom: 1px solid var(--border);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-      }
-
-      .hero { padding: 120px 0 60px; }
-      .section { padding: 80px 0; }
-      .feature-grid { grid-template-columns: 1fr; }
-      .specs-grid { grid-template-columns: 1fr; }
-      .stats-row { grid-template-columns: 1fr 1fr; }
-      .carousel-track { gap: 28px; animation-duration: 30s; }
-      .carousel-icon { width: 48px; height: 48px; border-radius: 12px; }
-      .carousel-icon svg { width: 24px; height: 24px; }
-      .carousel-wrapper::before, .carousel-wrapper::after { width: 60px; }
-    }
-
-    @media (max-width: 480px) {
-      .hero-buttons { flex-direction: column; }
-      .hero-buttons .btn-primary,
-      .hero-buttons .btn-ghost { width: 100%; justify-content: center; }
-      .stats-row { grid-template-columns: 1fr; }
-    }
-  </style>
-  <style>
-    /* Theme Toggle */
-    .theme-toggle-group {
-      display: flex;
-      align-items: center;
+    .theme-toggle {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 90;
+      display: inline-flex;
       gap: 4px;
       padding: 4px;
-      background: var(--bg-subtle, #f8fafc);
       border-radius: 999px;
-      border: 1px solid var(--border, #e5e7eb);
-    }
-
-    .theme-toggle-float {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 1000;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
 
     .theme-btn {
-      display: flex;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      border: 0;
+      background: transparent;
+      color: var(--text-muted);
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      border: none;
-      border-radius: 999px;
-      background: transparent;
-      color: var(--text-dim, #64748b);
       cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .theme-btn:hover {
-      color: var(--text, #0f172a);
+      transition: background 0.2s ease, color 0.2s ease;
     }
 
     .theme-btn.active {
-      background: var(--accent, #2563eb);
-      color: #ffffff;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
-    [data-theme="dark"] .theme-toggle-group {
-      background: var(--bg-subtle, #1e293b);
-      border-color: var(--border, #334155);
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      transition: background 0.25s ease, border-color 0.25s ease, backdrop-filter 0.25s ease;
+      border-bottom: 1px solid transparent;
     }
 
-    [data-theme="dark"] .theme-btn.active {
-      color: var(--bg, #0f172a);
+    .site-nav.scrolled {
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      border-bottom-color: var(--line);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
-    [data-theme="dark"] {
-      color-scheme: dark;
-      --bg: #0f172a;
-      --bg-subtle: #1e293b;
-      --bg-card: #1e293b;
-      --bg-card-hover: #334155;
-      --border: #334155;
-      --border-hover: #475569;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --surface-light: #1e293b;
-      --surface-warm: #1e293b;
-      --surface-border: #334155;
-      --text-dark: #f1f5f9;
-      --text-dark-muted: #94a3b8;
-      --accent: var(--accent-mid);
-      --accent-dark: var(--accent-mid);
+    .nav-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      gap: 18px;
     }
 
-    /* Dark Theme Base */
-    [data-theme="dark"] body {
-      background: var(--bg, #0f172a);
-      color: var(--text, #f1f5f9);
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      font-size: 29px;
+      font-family: "Fraunces", Georgia, serif;
     }
 
-    [data-theme="dark"] a {
-      color: var(--accent, #7aa2f7);
+    .brand-mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line-strong);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-size: 12px;
+      font-family: "Manrope", sans-serif;
+      font-weight: 800;
     }
 
-    [data-theme="dark"] nav.scrolled {
-      background: rgba(15, 23, 42, 0.85);
-      border-bottom-color: var(--border, #334155);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    .nav-links {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 26px;
     }
 
-    [data-theme="dark"] header,
-    [data-theme="dark"] .site-header,
-    [data-theme="dark"] .header,
-    [data-theme="dark"] .site-header *,
-    [data-theme="dark"] .header * {
-      color: var(--text, #f1f5f9);
+    .nav-links a {
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s ease;
     }
 
-    [data-theme="dark"] .tab {
-      background-color: #1c232d;
-      border-color: #2b3340;
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      color: var(--text);
     }
 
-    [data-theme="dark"] .tab button:hover {
-      background-color: #2a3341;
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 10px 22px rgba(76, 144, 123, 0.28);
+      transition: transform 0.2s ease;
     }
 
-    [data-theme="dark"] .tab button.active {
-      background-color: #323d4f;
+    .nav-cta:hover,
+    .nav-cta:focus-visible {
+      transform: translateY(-1px);
     }
 
-    [data-theme="dark"] .tabcontent {
-      border-color: #2b3340;
+    .mobile-toggle {
+      display: none;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      padding: 8px;
+      cursor: pointer;
     }
 
-    [data-theme="dark"] .audio-label {
-      color: var(--text-muted, #94a3b8);
+    .hero {
+      padding: 64px 0 44px;
     }
 
-    [data-theme="dark"] audio {
-      background-color: #1f2937;
-      border-color: #334155;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
+      align-items: center;
+      gap: 64px;
+      min-height: min(78vh, 860px);
     }
 
-    [data-theme="dark"] audio::-webkit-media-controls-panel {
-      background-color: #1f2937;
-      color: #e2e8f0;
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 22px;
     }
 
-    [data-theme="dark"] audio::-webkit-media-controls-play-button,
-    [data-theme="dark"] audio::-webkit-media-controls-volume-slider,
-    [data-theme="dark"] audio::-webkit-media-controls-seek-bar {
-      color: #93c5fd;
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: currentColor;
+      box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 18%, transparent);
     }
-  </style>
 
+    h1,
+    h2,
+    h3 {
+      font-family: "Fraunces", Georgia, serif;
+      letter-spacing: -0.022em;
+      line-height: 1.04;
+    }
 
-  <style>
-/* Modern Footer */
-.modern-footer {
-  background: var(--footer-bg, #f7f2ec);
-  border-top: 1px solid var(--footer-border, #e5ded5);
-  padding: 48px 0 24px;
-}
+    .hero h1 {
+      font-size: clamp(44px, 7.2vw, 80px);
+      margin-bottom: 20px;
+      max-width: 11ch;
+    }
 
-.modern-footer .footer-wrap {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+    .hero h1 .accent {
+      color: var(--accent-strong);
+    }
 
-.modern-footer .footer-grid {
-  display: grid;
-  grid-template-columns: minmax(220px, 2.2fr) repeat(3, minmax(140px, 1fr));
-  gap: 32px;
-}
+    .hero p {
+      color: var(--text-muted);
+      font-size: clamp(17px, 2vw, 28px);
+      max-width: 600px;
+      margin-bottom: 30px;
+    }
 
-.modern-footer .footer-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
 
-.modern-footer .footer-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
+    .chip {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 12px;
+      white-space: nowrap;
+    }
 
-.modern-footer .footer-mark {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #9bd0c6, #a5b9f6);
-  color: #1f2937;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
 
-.modern-footer .footer-desc {
-  color: var(--text-muted, #6b6b6b);
-  line-height: 1.6;
-  max-width: 320px;
-}
+    .btn-primary,
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border-radius: 999px;
+      padding: 14px 23px;
+      font-size: 15px;
+      font-weight: 700;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
 
-.modern-footer .footer-email {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 1px solid var(--footer-border, #e5ded5);
-  background: var(--footer-pill, #ffffff);
-  color: var(--text, #2b2b2b);
-  text-decoration: none;
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease;
-}
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid transparent;
+      box-shadow: 0 12px 22px rgba(76, 144, 123, 0.24);
+    }
 
-.modern-footer .footer-email svg {
-  width: 26px;
-  height: 26px;
-  stroke: currentColor;
-}
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
 
-.modern-footer .footer-email:hover {
-  color: var(--accent, #2563eb);
-  border-color: var(--accent, #2563eb);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
-}
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .btn-primary:focus-visible,
+    .btn-secondary:focus-visible {
+      transform: translateY(-1px);
+    }
 
-.modern-footer .footer-col h4 {
-  font-size: 0.78rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-muted, #7b7b7b);
-  margin-bottom: 12px;
-}
+    .hero-meta {
+      margin-top: 14px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
 
-.modern-footer .footer-links {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    .scroll-note {
+      margin-top: 40px;
+      color: var(--text-muted);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
 
-.modern-footer .footer-links a {
-  color: var(--text, #2b2b2b);
-  text-decoration: none;
-}
+    .hero-visual {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 560px;
+    }
 
-.modern-footer .footer-links a:hover {
-  color: var(--accent, #2563eb);
-}
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      inset: 8% 12%;
+      border-radius: 40px;
+      background: radial-gradient(circle at 50% 24%, rgba(113, 185, 165, 0.26), rgba(113, 185, 165, 0));
+      filter: blur(10px);
+      pointer-events: none;
+    }
 
-.modern-footer .footer-bottom {
-  margin-top: 32px;
-  padding-top: 16px;
-  border-top: 1px solid var(--footer-border, #e5ded5);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  color: var(--text-muted, #6b6b6b);
-  font-size: 0.9rem;
-}
+    .mac-window {
+      width: min(100%, 590px);
+      border-radius: 18px;
+      border: 1px solid color-mix(in srgb, var(--line-strong) 76%, transparent);
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      position: relative;
+      z-index: 2;
+    }
 
-.modern-footer .footer-bottom a {
-  color: var(--accent, #2563eb);
-  text-decoration: none;
-}
+    .mac-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--surface-subtle), var(--surface));
+      min-height: 36px;
+    }
 
-.modern-footer .footer-badges {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
+    .traffic-lights {
+      display: inline-flex;
+      gap: 7px;
+    }
 
-.modern-footer .footer-badge {
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--footer-border, #e5ded5);
-  background: var(--footer-pill, #ffffff);
-  font-size: 0.78rem;
-  color: var(--text-muted, #6b6b6b);
-}
+    .traffic-lights i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: block;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+    }
 
-[data-theme="dark"] .modern-footer {
-  background: #0b1220;
-  border-color: #1f2a3a;
-}
+    .traffic-lights i:nth-child(1) { background: #ff5f57; }
+    .traffic-lights i:nth-child(2) { background: #febc2f; }
+    .traffic-lights i:nth-child(3) { background: #28c840; }
 
-[data-theme="dark"] .modern-footer .footer-mark {
-  color: #0f172a;
-}
+    .mac-tab {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
 
-[data-theme="dark"] .modern-footer .footer-email,
-[data-theme="dark"] .modern-footer .footer-links a {
-  color: #e2e8f0;
-}
+    .mac-dots {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1;
+      letter-spacing: 2px;
+      transform: translateY(-1px);
+    }
 
-[data-theme="dark"] .modern-footer .footer-email {
-  background: #0f172a;
-  border-color: #1f2a3a;
-}
+    .mac-window img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      background: #f2f5f3;
+    }
 
-[data-theme="dark"] .modern-footer .footer-email:hover {
-  border-color: #334155;
-  color: #f8fafc;
-}
+    .hero-float {
+      position: absolute;
+      right: -26px;
+      bottom: -30px;
+      border-radius: 16px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 89%, transparent);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 700;
+      z-index: 3;
+    }
 
-[data-theme="dark"] .modern-footer .footer-desc,
-[data-theme="dark"] .modern-footer .footer-bottom,
-[data-theme="dark"] .modern-footer .footer-col h4 {
-  color: #94a3b8;
-}
+    section.block {
+      padding: 104px 0;
+      border-top: 1px solid color-mix(in srgb, var(--line) 74%, transparent);
+    }
 
-[data-theme="dark"] .modern-footer .footer-badge {
-  background: #0f172a;
-  border-color: #1f2a3a;
-  color: #94a3b8;
-}
+    .section-title {
+      margin-bottom: 18px;
+      font-size: clamp(36px, 4.4vw, 58px);
+      max-width: 14ch;
+    }
 
-@media (max-width: 900px) {
-  .modern-footer .footer-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
+    .section-subtitle {
+      max-width: 72ch;
+      color: var(--text-muted);
+      font-size: 18px;
+      margin-bottom: 42px;
+    }
 
-@media (max-width: 640px) {
-  .modern-footer .footer-grid {
-    grid-template-columns: 1fr;
-  }
+    .feature-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+      gap: 26px;
+      align-items: start;
+    }
 
-  .modern-footer .footer-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .feature-card {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 24px 24px 22px;
+    }
+
+    .feature-card h3 {
+      font-size: 27px;
+      margin-bottom: 9px;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .feature-card .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+      margin-right: 7px;
+      transform: translateY(-1px);
+    }
+
+    .table-card {
+      margin-top: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--line);
+      color: var(--text-muted);
+    }
+
+    th {
+      color: var(--text);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 800;
+      background: var(--surface-subtle);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .split-band {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      align-items: center;
+      gap: 56px;
+      padding: 40px 0;
+    }
+
+    .mini-window {
+      width: 100%;
+      max-width: 320px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: var(--surface);
+    }
+
+    .mini-window img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+
+    .split-copy h2 {
+      font-size: clamp(34px, 4vw, 58px);
+      margin-bottom: 14px;
+    }
+
+    .split-copy p {
+      color: var(--text-muted);
+      font-size: 18px;
+      max-width: 72ch;
+    }
+
+    .cta-band {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, var(--surface), color-mix(in srgb, var(--accent-soft) 46%, var(--surface)));
+      border-radius: var(--radius-lg);
+      padding: 44px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .cta-band h2 {
+      font-size: clamp(34px, 4vw, 52px);
+      margin-bottom: 8px;
+    }
+
+    .cta-band p {
+      color: var(--text-muted);
+      font-size: 16px;
+      max-width: 56ch;
+    }
+
+    .faq-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .faq-item {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 20px 22px;
+    }
+
+    .faq-item h3 {
+      font-size: 21px;
+      margin-bottom: 8px;
+    }
+
+    .faq-item p {
+      color: var(--text-muted);
+      font-size: 15px;
+      max-width: 82ch;
+    }
+
+    .site-footer {
+      border-top: 1px solid var(--line);
+      padding: 24px 0 36px;
+      margin-top: 84px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .footer-links a:hover,
+    .footer-links a:focus-visible {
+      color: var(--text);
+    }
+
+    @media (max-width: 1130px) {
+      .hero-grid,
+      .feature-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual {
+        min-height: 0;
+        padding-top: 8px;
+      }
+
+      .hero-float {
+        right: 12px;
+        bottom: -16px;
+      }
+
+      .split-band {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .mini-window {
+        max-width: 100%;
+      }
+
+      .cta-band {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 24px;
+        right: 24px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        display: none;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .mobile-toggle {
+        display: inline-flex;
+      }
+
+      .desktop-download {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 34px;
+      }
+
+      .section-subtitle,
+      .split-copy p {
+        font-size: 20px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .container {
+        width: min(var(--content), calc(100% - 28px));
+      }
+
+      .theme-toggle {
+        right: 8px;
+        top: 8px;
+      }
+
+      .hero h1 {
+        font-size: clamp(38px, 13vw, 54px);
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .hero-actions {
+        width: 100%;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+      }
+
+      .cta-band {
+        padding: 28px 22px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="theme-toggle-group theme-toggle-float">
+  <div class="theme-toggle" aria-label="Theme controls">
     <button class="theme-btn" data-theme-value="light" aria-label="Light mode">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="5"/>
-      <line x1="12" y1="1" x2="12" y2="3"/>
-      <line x1="12" y1="21" x2="12" y2="23"/>
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-      <line x1="1" y1="12" x2="3" y2="12"/>
-      <line x1="21" y1="12" x2="23" y2="12"/>
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-    </svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+      </svg>
     </button>
     <button class="theme-btn" data-theme-value="dark" aria-label="Dark mode">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 12.79A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.79"></path>
+      </svg>
     </button>
   </div>
 
-
-  <!-- Nav -->
-  <nav id="nav">
-    <div class="container">
-      <a href="#" class="nav-logo">
-        <div class="nav-logo-icon">Q</div>
+  <nav class="site-nav" id="siteNav">
+    <div class="container nav-row">
+      <a href="#" class="brand">
+        <span class="brand-mark">Q</span>
         QuantumStudio
       </a>
+
       <ul class="nav-links" id="navLinks">
         <li><a href="#features">Features</a></li>
-        <li><a href="#benchmarks">Benchmarks</a></li>
-        <li><a href="#silicon">Apple Silicon</a></li>
-        <li><a href="#research">Research</a></li>
-        <li><a href="#specs">Specs</a></li>
-        <li>
-          <a href="#download" class="nav-cta">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            Download
-          </a>
-        </li>
+        <li><a href="#formats">Formats</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="#faq">FAQ</a></li>
       </ul>
-      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+
+      <a href="#download" class="nav-cta desktop-download">Download</a>
+
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Open navigation">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <line x1="3" y1="12" x2="21" y2="12"/>
-          <line x1="3" y1="18" x2="21" y2="18"/>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
       </button>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="hero">
+  <header class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow reveal">
+          <span class="eyebrow-dot"></span>
+          Native macOS Quantum Workbench
+        </div>
+
+        <h1 class="reveal d1">
+          Build Quantum Insight
+          <span class="accent">With Your</span>
+          Apple Silicon Companion
+        </h1>
+
+        <p class="reveal d2">
+          The clean, offline-first benchmark studio for MLX-powered quantum simulation.
+          Run QFT, QAOA, VQE, and Hamiltonian workflows without cloud latency.
+        </p>
+
+        <div class="chip-row reveal d2">
+          <span class="chip">Private + Offline</span>
+          <span class="chip">MLX GPU Runtime</span>
+          <span class="chip">1-25 Qubit Studies</span>
+        </div>
+
+        <div class="hero-actions reveal d3">
+          <a href="#download" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download on macOS
+          </a>
+          <a href="#features" class="btn-secondary">Explore Features</a>
+        </div>
+
+        <p class="hero-meta reveal d3">Apple Silicon only (M1, M2, M3, M4) • Open source core • Local execution</p>
+        <div class="scroll-note reveal d3">Scroll to explore</div>
+      </div>
+
+      <div class="hero-visual reveal d1" aria-hidden="true">
+        <div class="mac-window">
+          <div class="mac-topbar">
+            <span class="traffic-lights"><i></i><i></i><i></i></span>
+            <span class="mac-tab">QuantumStudio Dashboard</span>
+            <span class="mac-dots">...</span>
+          </div>
+          <img src="images/screen003.png" alt="QuantumStudio dashboard screenshot" loading="eager">
+        </div>
+        <div class="hero-float">Unified Memory + Metal GPU</div>
+      </div>
+    </div>
+  </header>
+
+  <section class="block" id="features">
     <div class="container">
-      <div class="hero-badge reveal">
-        <span class="chip">Apple Silicon</span>
-        MLX Accelerated &middot; 1-25 Qubits &middot; No CUDA Required
-      </div>
-      <h1 class="reveal reveal-d1">
-        Quantum computing<br>on <span class="grad">your Mac</span>
-      </h1>
-      <p class="hero-sub reveal reveal-d2">
-        High-performance quantum circuit simulation powered by MLX.
-        Run QFT, VQE, and QCBM benchmarks on Apple Silicon with GPU acceleration.
-        Democratizing quantum computing research.
-      </p>
-      <div class="hero-buttons reveal reveal-d3">
-        <a href="#download" class="btn-primary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Download for macOS
-        </a>
-        <a href="#features" class="btn-ghost">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-            <polyline points="2 17 12 22 22 17"/>
-            <polyline points="2 12 12 17 22 12"/>
-          </svg>
-          Explore Features
-        </a>
-      </div>
-      <p class="hero-meta reveal reveal-d4">
-        <span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M20 15h2"/><path d="M9 2v2"/><path d="M9 20v2"/><path d="M2 9h2"/><path d="M20 9h2"/></svg>
-          M1 / M2 / M3 / M4
-        </span>
-        <span class="sep">&middot;</span>
-        <span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          State Vector Simulation
-        </span>
-        <span class="sep">&middot;</span>
-        <span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          MLX GPU Acceleration
-        </span>
-        <span class="sep">&middot;</span>
-        <span><a href="license.html">Open Source</a></span>
+      <h2 class="section-title reveal">Intelligent Benchmark Engine</h2>
+      <p class="section-subtitle reveal d1">
+        Three execution pipelines with consistent outputs, reproducible metadata,
+        and clean visual traces designed for publication and team review.
       </p>
 
-      <!-- Architecture Diagram -->
-      <div class="hero-illustration reveal reveal-d4">
-        <div class="arch-diagram">
-          <div class="arch-box">
-            <div class="arch-icon gradient-bg">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                <polyline points="2 17 12 22 22 17"/>
-                <polyline points="2 12 12 17 22 12"/>
-              </svg>
-            </div>
-            <h4>Quantum Circuits</h4>
-            <p>QFT, VQE, QCBM, Grover</p>
+      <div class="feature-layout">
+        <div>
+          <div class="card-grid">
+            <article class="feature-card reveal">
+              <h3><span class="dot"></span>MLX Runtime</h3>
+              <p>Lightning-fast tensor operations on Apple GPU with near-zero memory copy overhead.</p>
+            </article>
+            <article class="feature-card reveal d1">
+              <h3><span class="dot"></span>CPU Validator</h3>
+              <p>Reference-grade CPU path for deterministic checking and low-qubit debugging.</p>
+            </article>
+            <article class="feature-card reveal d2">
+              <h3><span class="dot"></span>Hybrid Mode</h3>
+              <p>Route heavy state evolution to GPU while preserving precise control flow on CPU.</p>
+            </article>
+            <article class="feature-card reveal d3">
+              <h3><span class="dot"></span>Live Highlighting</h3>
+              <p>Active gate and layer tracking while benchmarks run, with annotated timing marks.</p>
+            </article>
           </div>
-          <div class="arch-box">
-            <div class="arch-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-              </svg>
-            </div>
-            <h4>MLX Engine</h4>
-            <p>GPU + Unified Memory</p>
+
+          <div class="table-card reveal d2" id="formats">
+            <table>
+              <thead>
+                <tr>
+                  <th>Format</th>
+                  <th>MLX Runtime</th>
+                  <th>Hybrid</th>
+                  <th>CPU Validator</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Engine Type</td>
+                  <td>Metal + Unified Memory</td>
+                  <td>GPU + CPU split</td>
+                  <td>Full CPU path</td>
+                </tr>
+                <tr>
+                  <td>Target Use</td>
+                  <td>Max throughput</td>
+                  <td>Algorithm exploration</td>
+                  <td>Deterministic checks</td>
+                </tr>
+                <tr>
+                  <td>Typical Speed</td>
+                  <td>Up to 167x real-time</td>
+                  <td>Balanced latency</td>
+                  <td>Reference baseline</td>
+                </tr>
+                <tr>
+                  <td>Data Export</td>
+                  <td>JSON, CSV, PNG</td>
+                  <td>JSON, CSV, PNG</td>
+                  <td>JSON, CSV</td>
+                </tr>
+                <tr>
+                  <td>Best Fit</td>
+                  <td>QFT, QAOA scaling</td>
+                  <td>VQE / QCBM sweeps</td>
+                  <td>Verification runs</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="arch-box">
-            <div class="arch-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <rect x="4" y="4" width="16" height="16" rx="2"/>
-                <rect x="9" y="9" width="6" height="6"/>
-                <path d="M15 2v2"/>
-                <path d="M15 20v2"/>
-                <path d="M2 15h2"/>
-                <path d="M20 15h2"/>
-              </svg>
-            </div>
-            <h4>Apple Silicon</h4>
-            <p>M1 / M2 / M3 / M4 Max</p>
+        </div>
+
+        <div class="mac-window reveal d1" aria-hidden="true">
+          <div class="mac-topbar">
+            <span class="traffic-lights"><i></i><i></i><i></i></span>
+            <span class="mac-tab">Run Console</span>
+            <span class="mac-dots">...</span>
           </div>
+          <img src="images/screen004.png" alt="QuantumStudio benchmark output screenshot" loading="lazy">
         </div>
       </div>
     </div>
   </section>
 
-  <!-- App Screenshots -->
-  <section class="section" style="padding-top: 40px; padding-bottom: 60px;">
-    <div class="container">
-      <div class="section-header reveal">
-        <div class="section-label label-gradient">Desktop Application</div>
-        <h2>QuantumStudio Interface</h2>
-        <p>Run benchmarks interactively with our native macOS application. Real-time visualization, job management, and automatic result export.</p>
+  <section class="block">
+    <div class="container split-band">
+      <div class="mini-window reveal" aria-hidden="true">
+        <div class="mac-topbar">
+          <span class="traffic-lights"><i></i><i></i><i></i></span>
+          <span class="mac-tab">Circuit Builder</span>
+          <span class="mac-dots">...</span>
+        </div>
+        <img src="images/screen001.png" alt="QuantumStudio circuit builder" loading="lazy">
       </div>
-      <div class="screenshot-gallery reveal reveal-d1">
-        <div class="screenshot-item">
-          <img src="images/screen003.png" alt="QuantumStudio - Benchmarks Dashboard" loading="lazy">
-        </div>
-        <div class="screenshot-item">
-          <img src="images/screen004.png" alt="QuantumStudio - Settings" loading="lazy">
-        </div>
-        <div class="screenshot-item">
-          <img src="images/screen005.png" alt="QuantumStudio - About" loading="lazy">
-        </div>
+      <div class="split-copy">
+        <h2 class="reveal d1">On-Device Workflows</h2>
+        <p class="reveal d2">
+          Build circuits, launch parameter sweeps, and inspect noise behavior without sending data off your machine.
+          Every phase of experimentation remains local by default.
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- Paper Abstract -->
-  <section class="paper-abstract-section">
-    <div class="container">
-      <div class="paper-abstract-container reveal">
-        <div class="paper-journal-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-          </svg>
-          PRX Quantum &middot; In Preparation
+  <section class="block">
+    <div class="container split-band" style="grid-template-columns:minmax(0,1fr) 340px;">
+      <div class="split-copy">
+        <h2 class="reveal">AI Research Assistance</h2>
+        <p class="reveal d1">
+          Generate concise run summaries, compare experiments, and map anomalies to specific gates.
+          Built with Apple Intelligence APIs for context-aware analysis on macOS.
+        </p>
+      </div>
+      <div class="mini-window reveal d2" aria-hidden="true">
+        <div class="mac-topbar">
+          <span class="traffic-lights"><i></i><i></i><i></i></span>
+          <span class="mac-tab">Summary + Insights</span>
+          <span class="mac-dots">...</span>
         </div>
-        <h2 class="paper-title reveal reveal-d1">
-          <span class="highlight">mlxQuantum</span>: High-Performance Quantum Circuit Simulation on Apple Silicon via Unified Memory Architecture
-        </h2>
-        <div class="paper-abstract-box reveal reveal-d2">
-          <div class="paper-abstract-label">Abstract</div>
-          <p class="paper-abstract-text">
-            We present <strong>mlxQ</strong>, an open-source quantum circuit simulation framework built on Apple's MLX array framework, targeting the unified memory architecture of Apple Silicon processors. By eliminating host-device memory transfers inherent in discrete GPU systems, mlxQ enables mid-scale state-vector simulations on consumer hardware with <strong>128-512 GB unified memory</strong>. The framework provides a Python-first programming model with automatic Metal GPU acceleration, supporting single- and multi-qubit gate libraries, variational quantum algorithms (VQE, QAOA, QCBM), Hamiltonian simulation with Trotter-Suzuki decomposition, and OpenQASM 2.0 circuit import. We validate correctness through <strong>over 230 regression tests</strong> with analytical verification. On Apple M1 Max hardware, we demonstrate complete 25-qubit simulation for <strong>QFT (7.03s)</strong>, <strong>QAOA (11.07s)</strong>, and <strong>Hamiltonian evolution (40.73s)</strong>, with sub-millisecond execution for shallow circuits.
+        <img src="images/screen005.png" alt="QuantumStudio AI summary panel" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="download">
+    <div class="container">
+      <div class="cta-band reveal">
+        <div>
+          <h2>Start QuantumStudio on Your Mac</h2>
+          <p>
+            macOS binary distribution is available now. Source code is licensed under BSL-1.1 and binary releases follow the QuantumStudio Binary Distribution License.
           </p>
         </div>
-        <div class="paper-metrics reveal reveal-d3">
-          <div class="paper-metric">
-            <div class="paper-metric-value">1-25</div>
-            <div class="paper-metric-label">Qubit Range</div>
-          </div>
-          <div class="paper-metric">
-            <div class="paper-metric-value">7.03s</div>
-            <div class="paper-metric-label">QFT @ 25 Qubits</div>
-          </div>
-          <div class="paper-metric">
-            <div class="paper-metric-value">230+</div>
-            <div class="paper-metric-label">Regression Tests</div>
-          </div>
-          <div class="paper-metric">
-            <div class="paper-metric-value">150+</div>
-            <div class="paper-metric-label">Pages Documentation</div>
-          </div>
+        <div class="hero-actions">
+          <a href="https://polar.sh/BoltzmannEntropy/products/osxq" class="btn-primary" target="_blank" rel="noopener">Buy License</a>
+          <a href="https://github.com/BoltzmannEntropy/osxQ" class="btn-secondary" target="_blank" rel="noopener">View GitHub</a>
         </div>
+      </div>
+
+      <div class="faq-list" id="faq">
+        <article class="faq-item reveal d1">
+          <h3>Does QuantumStudio require internet access?</h3>
+          <p>No. Core simulation, result rendering, and comparison workflows run fully offline after installation.</p>
+        </article>
+        <article class="faq-item reveal d2">
+          <h3>What hardware is supported?</h3>
+          <p>Apple Silicon Macs (M1 through M4 series). The website and legal resources remain accessible on any browser.</p>
+        </article>
+        <article class="faq-item reveal d3">
+          <h3>Where can I review privacy and license terms?</h3>
+          <p>Use the linked pages for <a href="privacy.html">Privacy</a>, <a href="terms.html">Terms</a>, and <a href="license.html">License</a>.</p>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- Tech Carousel -->
-  <section class="tech-carousel">
-    <div class="container">
-      <p class="reveal">Built with State-of-the-Art Technology</p>
-    </div>
-    <div class="carousel-wrapper reveal reveal-d1">
-      <div class="carousel-track">
-        <!-- Set 1 -->
-        <div class="carousel-item">
-          <div class="carousel-icon gradient-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          </div>
-          <span class="carousel-name">MLX</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon blue-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
-          </div>
-          <span class="carousel-name">Apple Silicon</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon purple-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          </div>
-          <span class="carousel-name">Quantum Gates</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon teal-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-          </div>
-          <span class="carousel-name">Flutter</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          </div>
-          <span class="carousel-name">C++ Core</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon green-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-          </div>
-          <span class="carousel-name">Benchmarks</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon sky-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-          </div>
-          <span class="carousel-name">PennyLane</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon orange-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          </div>
-          <span class="carousel-name">QASMBench</span>
-        </div>
-        <!-- Set 2 (duplicate) -->
-        <div class="carousel-item">
-          <div class="carousel-icon gradient-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          </div>
-          <span class="carousel-name">MLX</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon blue-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
-          </div>
-          <span class="carousel-name">Apple Silicon</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon purple-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          </div>
-          <span class="carousel-name">Quantum Gates</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon teal-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-          </div>
-          <span class="carousel-name">Flutter</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          </div>
-          <span class="carousel-name">C++ Core</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon green-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-          </div>
-          <span class="carousel-name">Benchmarks</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon sky-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-          </div>
-          <span class="carousel-name">PennyLane</span>
-        </div>
-        <div class="carousel-item">
-          <div class="carousel-icon orange-bg">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          </div>
-          <span class="carousel-name">QASMBench</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Core Features -->
-  <section class="section section-dark" id="features">
-    <div class="container">
-      <div class="section-header reveal">
-        <div class="section-label label-gradient">Core Features</div>
-        <h2>Everything you need for quantum simulation</h2>
-        <p>A complete toolkit for quantum computing research on Apple Silicon: state vector simulation, comprehensive gate library, algorithm implementations, and publication-ready benchmarks.</p>
-      </div>
-      <div class="feature-grid">
-        <div class="feature-card reveal">
-          <span class="feature-emoji">&#9889;</span>
-          <h3>MLX Acceleration</h3>
-          <p class="feature-desc">Automatic GPU acceleration via Apple's MLX framework. Unified memory eliminates data transfer overhead between CPU and GPU.</p>
-          <div class="feature-tags">
-            <span class="feature-tag highlight">GPU Native</span>
-            <span class="feature-tag">JIT Compile</span>
-            <span class="feature-tag">Metal</span>
-          </div>
-        </div>
-        <div class="feature-card reveal reveal-d1">
-          <span class="feature-emoji">&#128200;</span>
-          <h3>Qubit Scaling</h3>
-          <p class="feature-desc">Simulate from 1 to 25 qubits with exponential scaling analysis. Sub-millisecond to hours of compute, all on consumer hardware.</p>
-          <div class="feature-tags">
-            <span class="feature-tag highlight">1-25 Qubits</span>
-            <span class="feature-tag">State Vector</span>
-            <span class="feature-tag">MPS</span>
-          </div>
-        </div>
-        <div class="feature-card reveal reveal-d2">
-          <span class="feature-emoji">&#128295;</span>
-          <h3>Complete Gate Library</h3>
-          <p class="feature-desc">Full quantum gate support: Pauli, Hadamard, CNOT, Toffoli, phase gates, rotations, and custom unitaries with automatic adjoint.</p>
-          <div class="feature-tags">
-            <span class="feature-tag highlight">60+ Gates</span>
-            <span class="feature-tag">Controlled</span>
-            <span class="feature-tag">Parametric</span>
-          </div>
-        </div>
-        <div class="feature-card reveal reveal-d3">
-          <span class="feature-emoji">&#128202;</span>
-          <h3>Benchmark Suite</h3>
-          <p class="feature-desc">yaoquantum.org compatible benchmarks with PennyLane, Qulacs, and Yao.jl patterns. JSON/CSV export and automated plotting.</p>
-          <div class="feature-tags">
-            <span class="feature-tag highlight">Publication Ready</span>
-            <span class="feature-tag">Plots</span>
-            <span class="feature-tag">CSV</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stats -->
-      <div class="stats-row">
-        <div class="stat reveal">
-          <div class="stat-number">25</div>
-          <div class="stat-label">Max Qubits</div>
-        </div>
-        <div class="stat reveal reveal-d1">
-          <div class="stat-number">230+</div>
-          <div class="stat-label">Regression Tests</div>
-        </div>
-        <div class="stat reveal reveal-d2">
-          <div class="stat-number">12</div>
-          <div class="stat-label">Tutorials</div>
-        </div>
-        <div class="stat reveal reveal-d3">
-          <div class="stat-number">5</div>
-          <div class="stat-label">Frameworks Validated</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Benchmark Showcase -->
-  <section class="section section-light" id="benchmarks">
-    <div class="container">
-      <div class="showcase reveal">
-        <div class="showcase-text">
-          <div class="section-label label-gradient">Benchmarks</div>
-          <h3>Research-grade performance analysis</h3>
-          <p>Run comprehensive quantum circuit benchmarks compatible with yaoquantum.org. Compare QFT, QCBM, VQE, and individual gate operations across qubit counts with automated visualization.</p>
-          <ul class="showcase-bullets">
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Quantum Fourier Transform (QFT): 7.03s at 25 qubits
-            </li>
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              QAOA ring optimization: 11.07s at 25 qubits
-            </li>
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              QCBM (9 layers): 26.28s at 25 qubits
-            </li>
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Hamiltonian simulation: 40.73s at 25 qubits
-            </li>
-          </ul>
-        </div>
-        <div class="showcase-visual">
-          <div class="code-block">
-<span class="comment"># Run quantum benchmark suite</span>
-./bin64/mlxQuantumBenchmarks
-
-<span class="comment"># Output: yaoquantum.org compatible</span>
-{
-  <span class="string">"benchmark"</span>: <span class="string">"qft"</span>,
-  <span class="string">"qubits"</span>: [<span class="number">4</span>, <span class="number">8</span>, <span class="number">12</span>, <span class="number">16</span>, <span class="number">20</span>, <span class="number">25</span>],
-  <span class="string">"times_ms"</span>: [<span class="number">0.12</span>, <span class="number">0.89</span>, <span class="number">7.2</span>, <span class="number">142</span>, <span class="number">4820</span>, <span class="number">15360000</span>],
-  <span class="string">"backend"</span>: <span class="string">"mlx_gpu"</span>,
-  <span class="string">"device"</span>: <span class="string">"M4 Max"</span>
-}
-
-<span class="comment"># Generates: qft_final.png, qcbm_final.png</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Benchmark Gallery -->
-      <div class="section-header reveal" style="margin-top: 80px;">
-        <h2>Exponential Scaling Results</h2>
-        <p>Complete benchmark scaling from 1-25 qubits on Apple M1 Max. All measurements confirm expected O(2<sup>n</sup>) complexity.</p>
-      </div>
-      <div class="benchmark-gallery reveal">
-        <div class="benchmark-grid">
-          <div class="benchmark-item">
-            <img src="images/qft_scaling.png" alt="QFT Scaling" loading="lazy">
-            <div class="benchmark-caption">
-              <h4>Quantum Fourier Transform</h4>
-              <p>7.03s at 25 qubits</p>
-            </div>
-          </div>
-          <div class="benchmark-item">
-            <img src="images/qcbm_scaling.png" alt="QCBM Scaling" loading="lazy">
-            <div class="benchmark-caption">
-              <h4>Quantum Circuit Born Machine</h4>
-              <p>26.28s at 25 qubits (9 layers)</p>
-            </div>
-          </div>
-          <div class="benchmark-item">
-            <img src="images/qaoa_scaling.png" alt="QAOA Scaling" loading="lazy">
-            <div class="benchmark-caption">
-              <h4>QAOA Ring Optimization</h4>
-              <p>11.07s at 25 qubits</p>
-            </div>
-          </div>
-          <div class="benchmark-item">
-            <img src="images/vqe_scaling.png" alt="VQE Scaling" loading="lazy">
-            <div class="benchmark-caption">
-              <h4>Variational Quantum Eigensolver</h4>
-              <p>~4.6 hours at 15 qubits</p>
-            </div>
-          </div>
-          <div class="benchmark-item">
-            <img src="images/hamiltonian_simulation_scaling.png" alt="Hamiltonian Simulation" loading="lazy">
-            <div class="benchmark-caption">
-              <h4>Hamiltonian Simulation</h4>
-              <p>40.73s at 25 qubits</p>
-            </div>
-          </div>
-          <div class="benchmark-item">
-            <img src="images/grover_scaling.png" alt="Grover Search" loading="lazy">
-            <div class="benchmark-caption">
-              <h4>Grover Search</h4>
-              <p>113.26s at 25 qubits</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Apple Silicon -->
-  <section class="section section-darker" id="silicon">
-    <div class="container">
-      <div class="showcase reversed reveal">
-        <div class="showcase-text">
-          <div class="section-label label-gradient">Apple Silicon</div>
-          <h3>Unified memory advantage</h3>
-          <p>Unlike discrete GPUs that require explicit memory transfers, Apple Silicon's unified memory architecture enables seamless CPU-GPU data sharing. This eliminates the primary bottleneck in quantum state manipulation.</p>
-          <ul class="showcase-bullets">
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              M1 / M2 / M3 / M4 generation support
-            </li>
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Up to 128GB unified memory for large states
-            </li>
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              2.3x more energy efficient than CUDA alternatives
-            </li>
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              No CUDA installation or NVIDIA GPU required
-            </li>
-          </ul>
-        </div>
-        <div class="showcase-visual">
-          <div class="chip-strip" style="justify-content: flex-start; gap: 8px;">
-            <span class="chip-pill m1">M1 Max</span>
-            <span class="chip-pill m1">M1 Ultra</span>
-            <span class="chip-pill m2">M2 Pro</span>
-            <span class="chip-pill m2">M2 Max</span>
-            <span class="chip-pill m3">M3 Pro</span>
-            <span class="chip-pill m3">M3 Max</span>
-            <span class="chip-pill m4">M4</span>
-            <span class="chip-pill m4">M4 Pro</span>
-            <span class="chip-pill m4">M4 Max</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Algorithms -->
-  <section class="section section-warm">
-    <div class="container">
-      <div class="showcase reveal">
-        <div class="showcase-text">
-          <div class="section-label label-gradient">Algorithms</div>
-          <h3>From gates to applications</h3>
-          <p>Complete quantum algorithm implementations validated against analytical expectations and established frameworks. Run Grover's search, quantum phase estimation, variational circuits, and Hamiltonian simulation.</p>
-          <ul class="showcase-bullets">
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Grover's algorithm with oracle and diffusion
-            </li>
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Quantum Fourier Transform (QFT)
-            </li>
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Variational Quantum Eigensolver (VQE)
-            </li>
-            <li>
-              <span class="bullet-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-              Phase estimation and Hamiltonian simulation
-            </li>
-          </ul>
-        </div>
-        <div class="showcase-visual">
-          <div class="code-block">
-<span class="comment">// Create quantum circuit</span>
-<span class="keyword">auto</span> circuit = Quantum::Circuit(<span class="number">4</span>);
-circuit.H(<span class="number">0</span>);
-circuit.CNOT(<span class="number">0</span>, <span class="number">1</span>);
-circuit.RZ(<span class="number">1</span>, theta);
-circuit.measure_all();
-
-<span class="comment">// Execute on MLX device</span>
-<span class="keyword">auto</span> device = Quantum::Device(<span class="string">"mlx.gpu"</span>);
-<span class="keyword">auto</span> result = device.<span class="function">execute</span>(circuit);
-
-<span class="comment">// Results with timing telemetry</span>
-std::cout << result.probabilities << std::endl;
-std::cout << <span class="string">"Time: "</span> << result.exec_time_ms << <span class="string">"ms"</span>;
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Academic Section -->
-  <section class="academic-section" id="research">
-    <div class="container">
-      <div class="academic-content reveal">
-        <div class="academic-text">
-          <div class="section-label label-gradient">Research</div>
-          <h3>Publication-ready benchmarking</h3>
-          <p>QuantumStudio is built on mlxQuantum, a research-grade quantum simulation framework targeting PRX Quantum publication. All benchmarks follow yaoquantum.org standards for direct comparison with established frameworks.</p>
-          <p>The framework has been validated against PennyLane, Qulacs, Yao.jl, and cuQuantum with comprehensive test coverage across 62 test cases spanning quantum operations, algorithms, and information-theoretic primitives.</p>
-        </div>
-        <div class="paper-card">
-          <div class="journal">PRX Quantum (In Preparation)</div>
-          <div class="title">mlxQuantum: High-Performance Quantum Circuit Simulation on Apple Silicon via Unified Memory Architecture</div>
-          <div class="authors">Demonstrating research-grade quantum simulation on consumer hardware</div>
-          <div class="abstract">We present mlxQuantum, a quantum circuit simulation framework leveraging Apple's MLX array framework for GPU-accelerated computation on Apple Silicon. Through comprehensive benchmarking across 1-25 qubits, we demonstrate that unified memory architecture enables practical quantum simulation with 2.3x energy efficiency compared to CUDA-based alternatives.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Technical Specs -->
-  <section class="section section-light" id="specs">
-    <div class="container">
-      <div class="section-header reveal">
-        <div class="section-label label-gradient">Technical Architecture</div>
-        <h2>Built for serious quantum research</h2>
-        <p>A production-ready platform for quantum computing research on Apple Silicon. Pure C++ core with MLX integration, Flutter desktop UI, and comprehensive benchmark compatibility.</p>
-      </div>
-      <div class="specs-grid">
-        <div class="spec-card reveal">
-          <div class="spec-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          </div>
-          <h3>MLX Framework</h3>
-          <p>Apple's array framework for machine learning. Automatic GPU acceleration, just-in-time compilation, and unified memory optimization.</p>
-        </div>
-        <div class="spec-card reveal reveal-d1">
-          <div class="spec-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-          </div>
-          <h3>Flutter Desktop</h3>
-          <p>Native desktop app for macOS. Material 3 design with responsive layouts, live benchmark logs, and result visualization.</p>
-        </div>
-        <div class="spec-card reveal reveal-d2">
-          <div class="spec-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          </div>
-          <h3>Pure C++ Core</h3>
-          <p>High-performance quantum simulation library with complete gate operations, state management, and algorithm implementations.</p>
-        </div>
-        <div class="spec-card reveal">
-          <div class="spec-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          </div>
-          <h3>State Vector Simulation</h3>
-          <p>Dense state vector representation with efficient tensor operations. Support for 1-25 qubits with exponential scaling analysis.</p>
-        </div>
-        <div class="spec-card reveal reveal-d1">
-          <div class="spec-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-          </div>
-          <h3>Benchmark Suite</h3>
-          <p>yaoquantum.org compatible benchmarks with JSON/CSV export. Automated plotting with gnuplot integration.</p>
-        </div>
-        <div class="spec-card reveal reveal-d2">
-          <div class="spec-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-          </div>
-          <h3>Framework Compatibility</h3>
-          <p>Validated against PennyLane, Qulacs, Yao.jl, and cuQuantum. API patterns match established quantum computing libraries.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="section section-dark cta-section" id="download">
-    <div class="container">
-      <h2 class="reveal">Start simulating quantum circuits</h2>
-      <p class="reveal reveal-d1">Run research-grade quantum simulations on your Mac. Open source, Apple Silicon optimized, no CUDA required.</p>
-      <div class="hero-buttons reveal reveal-d2">
-        <a href="#" class="btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Download for macOS
-        </a>
-        <a href="#features" class="btn-ghost">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 16 16 12 12 8"/>
-            <line x1="8" y1="12" x2="16" y2="12"/>
-          </svg>
-          View on GitHub
-        </a>
-      </div>
-      <div class="hero-buttons reveal reveal-d2" style="margin-top: 12px;">
-        <a href="https://polar.sh/BoltzmannEntropy/products/osxq" class="btn-primary" target="_blank" rel="noopener">Buy License (Polar)</a>
-        <a href="https://lemonsqueezy.com" class="btn-ghost" target="_blank" rel="noopener">Buy License (LemonSqueezy)</a>
-      </div>
-      <p class="hero-meta reveal reveal-d3" style="margin-top: 12px;">
-        <span>7-day in-app trial, then buy on web or directly from the app Pro tab.</span>
-      </p>
-      <p class="hero-meta reveal reveal-d3" style="margin-top: 16px;">
-        <span>macOS &middot; Apple Silicon &middot; MLX &middot; <a href="license.html">Open Source</a></span>
-      </p>
-      <p class="hero-meta reveal reveal-d3" style="margin-top: 8px;">
-        <span>The codebase is cross-platform, but we currently provide macOS binaries only. License: Source code is licensed under Business Source License 1.1 (BSL-1.1), and binary distributions are licensed under the QuantumStudio Binary Distribution License. See LICENSE, BINARY-LICENSE.txt, and the <a href="license.html">website License page</a>.</span>
-      </p>
-    </div>
-  </section>
-
-  <!-- Footer -->
-    <footer class="modern-footer">
-    <div class="footer-wrap">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <div class="footer-logo">
-            <span class="footer-mark">Q</span>
-            <span class="footer-name">QuantumStudio</span>
-          </div>
-          <p class="footer-desc">Quantum circuit benchmarks and simulations for Apple Silicon.</p>
-          <a class="footer-email" href="mailto:solomon@qneura.ai" aria-label="Email solomon@qneura.ai">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 7h16v10H4z" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="m4 8 8 6 8-6" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-          </a>
-        </div>
-        <div class="footer-col">
-          <h4>Product</h4>
-          <ul class="footer-links">
-          <li><a href="index.html#features">Features</a></li>
-          <li><a href="index.html#benchmarks">Benchmarks</a></li>
-          <li><a href="index.html#specs">Specs</a></li>
-          <li><a href="index.html#download">Download</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Support</h4>
-          <ul class="footer-links">
-          <li><a href="https://github.com/BoltzmannEntropy/osxQ" target="_blank" rel="noopener">GitHub</a></li>
-          <li><a href="index.html#download">Download</a></li>
-          <li><a href="mailto:solomon@qneura.ai">Contact</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Legal</h4>
-          <ul class="footer-links">
-          <li><a href="privacy.html">Privacy</a></li>
-          <li><a href="terms.html">Terms</a></li>
-          <li><a href="license.html">License</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <div>&copy; 2026 QuantumStudio. All rights reserved.</div>
-        <div>Made with &hearts; for quantum builders. <a href="https://qneura.ai/apps.html" target="_blank" rel="noopener">QNeura.ai</a></div>
-        <div class="footer-badges">
-        <span class="footer-badge">macOS</span>
-        <span class="footer-badge">Apple Silicon</span>
-        <span class="footer-badge">MLX</span>
-        <span class="footer-badge">BSL-1.1</span>
-        </div>
+  <footer class="site-footer">
+    <div class="container footer-row">
+      <div>&copy; 2026 QuantumStudio • Apple Silicon quantum benchmarks</div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="license.html">License</a>
+        <a href="mailto:solomon@qneura.ai">Contact</a>
       </div>
     </div>
   </footer>
 
-
-  <script>
-    // Reveal on scroll
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // Nav scroll
-    const nav = document.getElementById('nav');
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 40);
-    }, { passive: true });
-
-    // Mobile menu
-    const toggle = document.getElementById('mobileToggle');
-    const links = document.getElementById('navLinks');
-    toggle.addEventListener('click', () => links.classList.toggle('open'));
-    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
-
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        const t = document.querySelector(this.getAttribute('href'));
-        if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-      });
-    });
-  </script>
   <script>
     (function() {
-      const themeButtons = document.querySelectorAll('.theme-btn');
-      if (!themeButtons.length) {
-        return;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      }, { threshold: 0.12, rootMargin: "0px 0px -35px 0px" });
+
+      document.querySelectorAll(".reveal").forEach((node) => observer.observe(node));
+
+      const nav = document.getElementById("siteNav");
+      window.addEventListener("scroll", () => {
+        nav.classList.toggle("scrolled", window.scrollY > 8);
+      }, { passive: true });
+
+      const toggle = document.getElementById("mobileToggle");
+      const links = document.getElementById("navLinks");
+      if (toggle && links) {
+        toggle.addEventListener("click", () => {
+          links.classList.toggle("open");
+        });
+        links.querySelectorAll("a").forEach((a) => {
+          a.addEventListener("click", () => links.classList.remove("open"));
+        });
       }
-      const storedTheme = localStorage.getItem('theme');
-      const existingTheme = document.documentElement.getAttribute('data-theme');
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const initialTheme = storedTheme || existingTheme || (prefersDark ? 'dark' : 'light');
-      document.documentElement.setAttribute('data-theme', initialTheme);
-      themeButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.themeValue === initialTheme);
-      });
-      themeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const theme = btn.dataset.themeValue;
-          document.documentElement.setAttribute('data-theme', theme);
-          localStorage.setItem('theme', theme);
-          themeButtons.forEach(b => b.classList.toggle('active', b === btn));
+
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function(e) {
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
         });
       });
+
+      const themeButtons = document.querySelectorAll(".theme-btn");
+      if (themeButtons.length) {
+        const savedTheme = localStorage.getItem("theme");
+        const existing = document.documentElement.getAttribute("data-theme");
+        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const initial = savedTheme || existing || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", initial);
+        themeButtons.forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.themeValue === initial);
+          btn.addEventListener("click", () => {
+            const mode = btn.dataset.themeValue;
+            document.documentElement.setAttribute("data-theme", mode);
+            localStorage.setItem("theme", mode);
+            themeButtons.forEach((node) => node.classList.toggle("active", node === btn));
+          });
+        });
+      }
     })();
   </script>
-
   <script src="privacy-consent.js"></script>
 </body>
 </html>
