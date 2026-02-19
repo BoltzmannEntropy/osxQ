@@ -181,14 +181,28 @@
 .modern-footer .footer-email {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--footer-border, #e5ded5);
+  background: var(--footer-pill, #ffffff);
   color: var(--text, #2b2b2b);
-  font-weight: 500;
   text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.modern-footer .footer-email svg {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
 }
 
 .modern-footer .footer-email:hover {
   color: var(--accent, #2563eb);
+  border-color: var(--accent, #2563eb);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
 }
 
 .modern-footer .footer-col h4 {
@@ -263,6 +277,16 @@
 [data-theme="dark"] .modern-footer .footer-email,
 [data-theme="dark"] .modern-footer .footer-links a {
   color: #e2e8f0;
+}
+
+[data-theme="dark"] .modern-footer .footer-email {
+  background: #0f172a;
+  border-color: #1f2a3a;
+}
+
+[data-theme="dark"] .modern-footer .footer-email:hover {
+  border-color: #334155;
+  color: #f8fafc;
 }
 
 [data-theme="dark"] .modern-footer .footer-desc,
@@ -384,7 +408,12 @@
             <span class="footer-name">QuantumStudio</span>
           </div>
           <p class="footer-desc">Quantum circuit benchmarks and simulations for Apple Silicon.</p>
-          <a class="footer-email" href="mailto:solomon@qneura.ai">solomon@qneura.ai</a>
+          <a class="footer-email" href="mailto:solomon@qneura.ai" aria-label="Email solomon@qneura.ai">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16v10H4z" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="m4 8 8 6 8-6" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </a>
         </div>
         <div class="footer-col">
           <h4>Product</h4>
