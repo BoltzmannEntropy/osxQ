@@ -460,6 +460,63 @@
       border-top: 1px solid color-mix(in srgb, var(--line) 74%, transparent);
     }
 
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .media-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(16, 24, 28, 0.06);
+    }
+
+    .media-card img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      background: var(--surface-subtle);
+    }
+
+    .media-card figcaption {
+      padding: 10px 12px 12px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .plot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .plot-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .plot-card img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      background: var(--surface-subtle);
+    }
+
+    .plot-card figcaption {
+      padding: 10px 12px 12px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
     .section-title {
       margin-bottom: 18px;
       font-size: clamp(36px, 4.4vw, 58px);
@@ -630,31 +687,180 @@
       max-width: 82ch;
     }
 
-    .site-footer {
+    /* ===== Modern Footer ===== */
+    .modern-footer {
+      background: var(--bg-soft);
       border-top: 1px solid var(--line);
-      padding: 24px 0 36px;
+      padding: 48px 0 24px;
       margin-top: 84px;
-      color: var(--text-muted);
-      font-size: 13px;
     }
 
-    .footer-row {
+    .modern-footer .footer-wrap {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .modern-footer .footer-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 2.2fr) repeat(3, minmax(140px, 1fr));
+      gap: 32px;
+    }
+
+    .modern-footer .footer-brand {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modern-footer .footer-logo {
+      display: flex;
       align-items: center;
       gap: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .modern-footer .footer-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #9bd0c6, #a5b9f6);
+      color: #1f2937;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .modern-footer .footer-desc {
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 320px;
+    }
+
+    .modern-footer .footer-email {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      text-decoration: none;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    .modern-footer .footer-email svg {
+      width: 26px;
+      height: 26px;
+      stroke: currentColor;
+    }
+
+    .modern-footer .footer-email:hover {
+      color: var(--accent-strong);
+      border-color: var(--accent-strong);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+    }
+
+    .modern-footer .footer-col h4 {
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .modern-footer .footer-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modern-footer .footer-links a {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .modern-footer .footer-links a:hover {
+      color: var(--accent-strong);
+    }
+
+    .modern-footer .footer-bottom {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .modern-footer .footer-bottom a {
+      color: var(--accent-strong);
+      text-decoration: none;
+    }
+
+    .modern-footer .footer-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
-    .footer-links {
-      display: inline-flex;
-      align-items: center;
-      gap: 14px;
+    .modern-footer .footer-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      font-size: 0.78rem;
+      color: var(--text-muted);
     }
 
-    .footer-links a:hover,
-    .footer-links a:focus-visible {
-      color: var(--text);
+    [data-theme="dark"] .modern-footer {
+      background: #0b1220;
+      border-color: #1f2a3a;
+    }
+
+    [data-theme="dark"] .modern-footer .footer-mark {
+      color: #0f172a;
+    }
+
+    [data-theme="dark"] .modern-footer .footer-email,
+    [data-theme="dark"] .modern-footer .footer-links a {
+      color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .modern-footer .footer-email {
+      background: #0f172a;
+      border-color: #1f2a3a;
+    }
+
+    [data-theme="dark"] .modern-footer .footer-email:hover {
+      border-color: #334155;
+      color: #f8fafc;
+    }
+
+    [data-theme="dark"] .modern-footer .footer-desc,
+    [data-theme="dark"] .modern-footer .footer-bottom,
+    [data-theme="dark"] .modern-footer .footer-col h4 {
+      color: #94a3b8;
+    }
+
+    [data-theme="dark"] .modern-footer .footer-badge {
+      background: #0f172a;
+      border-color: #1f2a3a;
+      color: #94a3b8;
     }
 
     @media (max-width: 1130px) {
@@ -684,6 +890,10 @@
 
       .cta-band {
         grid-template-columns: 1fr;
+      }
+
+      .modern-footer .footer-grid {
+        grid-template-columns: 1fr 1fr;
       }
     }
 
@@ -727,6 +937,11 @@
       .card-grid {
         grid-template-columns: 1fr;
       }
+
+      .media-grid,
+      .plot-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 560px) {
@@ -758,6 +973,15 @@
 
       .cta-band {
         padding: 28px 22px;
+      }
+
+      .modern-footer .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modern-footer .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
   </style>
@@ -828,7 +1052,7 @@
         </p>
 
         <div class="chip-row reveal d2">
-          <span class="chip">Private + Offline</span>
+          <span class="chip">Unified Memory</span>
           <span class="chip">MLX GPU Runtime</span>
           <span class="chip">1-25 Qubit Studies</span>
         </div>
@@ -845,7 +1069,7 @@
           <a href="#features" class="btn-secondary">Explore Features</a>
         </div>
 
-        <p class="hero-meta reveal d3">Apple Silicon only (M1, M2, M3, M4) • Open source core • Local execution</p>
+        <p class="hero-meta reveal d3">Apple Silicon focus • M-series benchmark results • Local execution</p>
         <div class="scroll-note reveal d3">Scroll to explore</div>
       </div>
 
@@ -863,32 +1087,63 @@
     </div>
   </header>
 
+  <section class="block">
+    <div class="container">
+      <h2 class="section-title reveal">QuantumStudio Screens</h2>
+      <p class="section-subtitle reveal d1">
+        Current desktop snapshots from the app workflow.
+      </p>
+      <div class="media-grid">
+        <figure class="media-card reveal">
+          <img src="images/screen001.png" alt="QuantumStudio screen 001" loading="lazy">
+          <figcaption>screen001.png</figcaption>
+        </figure>
+        <figure class="media-card reveal d1">
+          <img src="images/screen002.png" alt="QuantumStudio screen 002" loading="lazy">
+          <figcaption>screen002.png</figcaption>
+        </figure>
+        <figure class="media-card reveal d2">
+          <img src="images/screen003.png" alt="QuantumStudio screen 003" loading="lazy">
+          <figcaption>screen003.png</figcaption>
+        </figure>
+        <figure class="media-card reveal d3">
+          <img src="images/screen004.png" alt="QuantumStudio screen 004" loading="lazy">
+          <figcaption>screen004.png</figcaption>
+        </figure>
+        <figure class="media-card reveal d3">
+          <img src="images/screen005.png" alt="QuantumStudio screen 005" loading="lazy">
+          <figcaption>screen005.png</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
   <section class="block" id="features">
     <div class="container">
-      <h2 class="section-title reveal">Intelligent Benchmark Engine</h2>
+      <h2 class="section-title reveal">Supported Benchmarks</h2>
       <p class="section-subtitle reveal d1">
-        Three execution pipelines with consistent outputs, reproducible metadata,
-        and clean visual traces designed for publication and team review.
+        Comprehensive benchmark coverage including standard OpenQASM workloads,
+        variational algorithms, and time-evolution simulations.
       </p>
 
       <div class="feature-layout">
         <div>
           <div class="card-grid">
             <article class="feature-card reveal">
-              <h3><span class="dot"></span>MLX Runtime</h3>
-              <p>Lightning-fast tensor operations on Apple GPU with near-zero memory copy overhead.</p>
+              <h3><span class="dot"></span>QASMBench</h3>
+              <p>Reproduces OpenQASM workloads across chemistry, optimization, arithmetic, and ML circuits.</p>
             </article>
             <article class="feature-card reveal d1">
-              <h3><span class="dot"></span>CPU Validator</h3>
-              <p>Reference-grade CPU path for deterministic checking and low-qubit debugging.</p>
+              <h3><span class="dot"></span>QFT &amp; Phase Estimation</h3>
+              <p>Fourier primitives validated against analytical transforms and reference-style benchmark data.</p>
             </article>
             <article class="feature-card reveal d2">
-              <h3><span class="dot"></span>Hybrid Mode</h3>
-              <p>Route heavy state evolution to GPU while preserving precise control flow on CPU.</p>
+              <h3><span class="dot"></span>Variational Circuits</h3>
+              <p>VQE, QAOA, and QCBM with hardware-efficient ansatze and optimization loops.</p>
             </article>
             <article class="feature-card reveal d3">
-              <h3><span class="dot"></span>Live Highlighting</h3>
-              <p>Active gate and layer tracking while benchmarks run, with annotated timing marks.</p>
+              <h3><span class="dot"></span>Time Evolution</h3>
+              <p>Trotter-Suzuki Hamiltonian simulation (including Ising/Heisenberg-style model workloads).</p>
             </article>
           </div>
 
@@ -896,42 +1151,42 @@
             <table>
               <thead>
                 <tr>
-                  <th>Format</th>
-                  <th>MLX Runtime</th>
-                  <th>Hybrid</th>
-                  <th>CPU Validator</th>
+                  <th>Benchmark</th>
+                  <th>Representative Data</th>
+                  <th>Scope</th>
+                  <th>Notes</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>Engine Type</td>
-                  <td>Metal + Unified Memory</td>
-                  <td>GPU + CPU split</td>
-                  <td>Full CPU path</td>
+                  <td>Random Circuit</td>
+                  <td>22q: 2.45s • 23q: 5.16s • 25q: 22.40s</td>
+                  <td>M-series runs</td>
+                  <td>State-vector scaling snapshot</td>
                 </tr>
                 <tr>
-                  <td>Target Use</td>
-                  <td>Max throughput</td>
-                  <td>Algorithm exploration</td>
-                  <td>Deterministic checks</td>
+                  <td>Variational (HE ansatz)</td>
+                  <td>22q: 2.11s • 23q: 4.44s • 25q: 19.24s</td>
+                  <td>VQE / QAOA / QCBM family</td>
+                  <td>Hardware-efficient ansatz profile</td>
                 </tr>
                 <tr>
-                  <td>Typical Speed</td>
-                  <td>Up to 167x real-time</td>
-                  <td>Balanced latency</td>
-                  <td>Reference baseline</td>
+                  <td>Grover Search</td>
+                  <td>21q: 1.82s • 22q: 5.00s • 24q: 40.08s</td>
+                  <td>Oracle + amplitude amplification</td>
+                  <td>Rapid growth at higher qubits</td>
                 </tr>
                 <tr>
-                  <td>Data Export</td>
-                  <td>JSON, CSV, PNG</td>
-                  <td>JSON, CSV, PNG</td>
-                  <td>JSON, CSV</td>
+                  <td>Coverage</td>
+                  <td>QASMBench, QFT, phase estimation, variational, Hamiltonian, Grover</td>
+                  <td>OpenQASM + custom circuits</td>
+                  <td>Designed for reproducible studies</td>
                 </tr>
                 <tr>
-                  <td>Best Fit</td>
-                  <td>QFT, QAOA scaling</td>
-                  <td>VQE / QCBM sweeps</td>
-                  <td>Verification runs</td>
+                  <td>Validation</td>
+                  <td>150+ executable tests</td>
+                  <td>Correctness and regression checks</td>
+                  <td>Includes educational QIT verification appendix</td>
                 </tr>
               </tbody>
             </table>
@@ -977,7 +1232,7 @@
         <p class="reveal d1">
           QuantumStudio is built around mlxQ: an MLX-based state-vector simulator for Apple Silicon
           unified memory. It supports QFT, QAOA, QCBM, Grover, Hamiltonian simulation, and OpenQASM 2.0 import.
-          Benchmarks produce reproducible CSV/JSON artifacts with 230+ regression tests for validation.
+          Benchmarks produce reproducible artifacts and are validated with 150+ executable tests.
         </p>
       </div>
       <div class="mini-window reveal d2" aria-hidden="true">
@@ -993,6 +1248,37 @@
 
   <section class="block" id="download">
     <div class="container">
+      <h2 class="section-title reveal">Benchmark Scaling Plots</h2>
+      <p class="section-subtitle reveal d1">
+        Current exported scaling plots across benchmark families.
+      </p>
+      <div class="plot-grid">
+        <figure class="plot-card reveal">
+          <img src="images/qft_scaling.png" alt="QFT scaling plot" loading="lazy">
+          <figcaption>qft_scaling.png</figcaption>
+        </figure>
+        <figure class="plot-card reveal d1">
+          <img src="images/qcbm_scaling.png" alt="QCBM scaling plot" loading="lazy">
+          <figcaption>qcbm_scaling.png</figcaption>
+        </figure>
+        <figure class="plot-card reveal d2">
+          <img src="images/qaoa_scaling.png" alt="QAOA scaling plot" loading="lazy">
+          <figcaption>qaoa_scaling.png</figcaption>
+        </figure>
+        <figure class="plot-card reveal d3">
+          <img src="images/vqe_scaling.png" alt="VQE scaling plot" loading="lazy">
+          <figcaption>vqe_scaling.png</figcaption>
+        </figure>
+        <figure class="plot-card reveal d3">
+          <img src="images/hamiltonian_simulation_scaling.png" alt="Hamiltonian simulation scaling plot" loading="lazy">
+          <figcaption>hamiltonian_simulation_scaling.png</figcaption>
+        </figure>
+        <figure class="plot-card reveal d3">
+          <img src="images/grover_scaling.png" alt="Grover scaling plot" loading="lazy">
+          <figcaption>grover_scaling.png</figcaption>
+        </figure>
+      </div>
+
       <div class="cta-band reveal">
         <div>
           <h2>Start QuantumStudio on Your Mac</h2>
@@ -1009,11 +1295,11 @@
       <div class="faq-list" id="faq">
         <article class="faq-item reveal d1">
           <h3>Does QuantumStudio require internet access?</h3>
-          <p>No. Core simulation, result rendering, and comparison workflows run fully offline after installation.</p>
+          <p>Core simulation runs locally on your Mac. Internet is only needed for things like downloads, purchases, or visiting external resources.</p>
         </article>
         <article class="faq-item reveal d2">
           <h3>What hardware is supported?</h3>
-          <p>Apple Silicon Macs (M1 through M4 series). The website and legal resources remain accessible on any browser.</p>
+          <p>Apple Silicon Macs (M-series). Public benchmark snapshots include 21-25 qubit runs on M-series hardware.</p>
         </article>
         <article class="faq-item reveal d3">
           <h3>Where can I review privacy and license terms?</h3>
@@ -1023,14 +1309,56 @@
     </div>
   </section>
 
-  <footer class="site-footer">
-    <div class="container footer-row">
-      <div>&copy; 2026 QuantumStudio • Apple Silicon quantum benchmarks</div>
-      <div class="footer-links">
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-        <a href="license.html">License</a>
-        <a href="mailto:solomon@qneura.ai">Contact</a>
+  <footer class="modern-footer">
+    <div class="footer-wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="footer-mark">Q</span>
+            <span class="footer-name">QuantumStudio</span>
+          </div>
+          <p class="footer-desc">Quantum circuit benchmarks and simulations for Apple Silicon.</p>
+          <a class="footer-email" href="mailto:solomon@qneura.ai" aria-label="Email solomon@qneura.ai">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16v10H4z" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="m4 8 8 6 8-6" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </a>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul class="footer-links">
+            <li><a href="index.html#features">Features</a></li>
+            <li><a href="index.html#formats">Formats</a></li>
+            <li><a href="index.html#faq">FAQ</a></li>
+            <li><a href="index.html#download">Download</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul class="footer-links">
+            <li><a href="https://github.com/BoltzmannEntropy/osxQ" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="index.html#download">Download</a></li>
+            <li><a href="mailto:solomon@qneura.ai">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul class="footer-links">
+            <li><a href="privacy.html">Privacy</a></li>
+            <li><a href="terms.html">Terms</a></li>
+            <li><a href="license.html">License</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 QuantumStudio. All rights reserved.</div>
+        <div>Made with &hearts; for quantum builders. <a href="https://qneura.ai/apps.html" target="_blank" rel="noopener">QNeura.ai</a></div>
+        <div class="footer-badges">
+          <span class="footer-badge">macOS</span>
+          <span class="footer-badge">Apple Silicon</span>
+          <span class="footer-badge">MLX</span>
+        </div>
       </div>
     </div>
   </footer>
