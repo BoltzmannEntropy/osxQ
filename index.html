@@ -97,10 +97,6 @@
     .d3 { transition-delay: 0.24s; }
 
     .theme-toggle {
-      position: fixed;
-      top: 18px;
-      right: 18px;
-      z-index: 90;
       display: inline-flex;
       gap: 4px;
       padding: 4px;
@@ -152,6 +148,13 @@
       justify-content: space-between;
       padding: 16px 0;
       gap: 18px;
+    }
+
+    .nav-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: auto;
     }
 
     .brand {
@@ -925,6 +928,10 @@
         display: none;
       }
 
+      .nav-right {
+        margin-left: 0;
+      }
+
       .hero {
         padding-top: 34px;
       }
@@ -947,11 +954,6 @@
     @media (max-width: 560px) {
       .container {
         width: min(var(--content), calc(100% - 28px));
-      }
-
-      .theme-toggle {
-        right: 8px;
-        top: 8px;
       }
 
       .hero h1 {
@@ -987,25 +989,6 @@
   </style>
 </head>
 <body>
-  <div class="theme-toggle" aria-label="Theme controls">
-    <button class="theme-btn" data-theme-value="light" aria-label="Light mode">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <circle cx="12" cy="12" r="5"></circle>
-        <line x1="12" y1="1" x2="12" y2="3"></line>
-        <line x1="12" y1="21" x2="12" y2="23"></line>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-        <line x1="1" y1="12" x2="3" y2="12"></line>
-        <line x1="21" y1="12" x2="23" y2="12"></line>
-      </svg>
-    </button>
-    <button class="theme-btn" data-theme-value="dark" aria-label="Dark mode">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M21 12.79A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.79"></path>
-      </svg>
-    </button>
-  </div>
-
   <nav class="site-nav" id="siteNav">
     <div class="container nav-row">
       <a href="#" class="brand">
@@ -1020,7 +1003,27 @@
         <li><a href="#faq">FAQ</a></li>
       </ul>
 
-      <a href="#download" class="nav-cta desktop-download">Download</a>
+      <div class="nav-right">
+        <div class="theme-toggle" aria-label="Theme controls">
+          <button class="theme-btn" data-theme-value="light" aria-label="Light mode">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+            </svg>
+          </button>
+          <button class="theme-btn" data-theme-value="dark" aria-label="Dark mode">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M21 12.79A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.79"></path>
+            </svg>
+          </button>
+        </div>
+        <a href="#download" class="nav-cta desktop-download">Download</a>
+      </div>
 
       <button class="mobile-toggle" id="mobileToggle" aria-label="Open navigation">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
