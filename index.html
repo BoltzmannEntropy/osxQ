@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QuantumStudio - Read Quantum Systems Clearly</title>
-  <meta name="description" content="QuantumStudio brings clean, native quantum benchmarking to macOS with MLX acceleration, elegant workflows, and publication-ready results.">
-  <meta property="og:title" content="QuantumStudio - Read Quantum Systems Clearly">
+  <title>osxQuantum - Apple Silicon Quantum Benchmarking</title>
+  <meta name="description" content="osxQuantum is a local macOS quantum benchmark studio built on mlxQ for Apple Silicon, with exportable results and reproducible workflows.">
+  <meta property="og:title" content="osxQuantum - Apple Silicon Quantum Benchmarking">
   <meta property="og:description" content="A clean macOS experience for running quantum benchmarks on Apple Silicon.">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
@@ -230,15 +230,15 @@
     }
 
     .hero {
-      padding: 64px 0 44px;
+      padding: 48px 0 30px;
     }
 
     .hero-grid {
       display: grid;
       grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
       align-items: center;
-      gap: 64px;
-      min-height: min(78vh, 860px);
+      gap: 50px;
+      min-height: min(66vh, 740px);
     }
 
     .eyebrow {
@@ -283,16 +283,16 @@
 
     .hero p {
       color: var(--text-muted);
-      font-size: clamp(17px, 2vw, 28px);
+      font-size: clamp(16px, 1.7vw, 22px);
       max-width: 600px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .chip-row {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 30px;
+      margin-bottom: 22px;
     }
 
     .chip {
@@ -354,7 +354,7 @@
     }
 
     .scroll-note {
-      margin-top: 40px;
+      margin-top: 24px;
       color: var(--text-muted);
       font-size: 11px;
       letter-spacing: 0.16em;
@@ -933,7 +933,7 @@
       }
 
       .hero {
-        padding-top: 34px;
+        padding-top: 28px;
       }
 
       .section-subtitle,
@@ -993,7 +993,7 @@
     <div class="container nav-row">
       <a href="#" class="brand">
         <span class="brand-mark">Q</span>
-        QuantumStudio
+        osxQuantum
       </a>
 
       <ul class="nav-links" id="navLinks">
@@ -1044,14 +1044,13 @@
         </div>
 
         <h1 class="reveal d1">
-          Build Quantum Insight
-          With Your
-          <span class="accent">Apple Silicon</span> Companion
+          Benchmark Quantum Workloads
+          On <span class="accent">Apple Silicon</span>
         </h1>
 
         <p class="reveal d2">
-          The clean, offline-first benchmark studio for MLX-powered quantum simulation.
-          Run QFT, QAOA, VQE, and Hamiltonian workflows without cloud latency.
+          osxQuantum is an offline-first benchmark studio built on mlxQ.
+          There is no native MLX quantum simulator available today, so osxQuantum ships a local simulator stack for QFT, QAOA, VQE, Hamiltonian workflows, and OpenQASM runs.
         </p>
 
         <div class="chip-row reveal d2">
@@ -1080,10 +1079,10 @@
         <div class="mac-window">
           <div class="mac-topbar">
             <span class="traffic-lights"><i></i><i></i><i></i></span>
-            <span class="mac-tab">QuantumStudio Dashboard</span>
+            <span class="mac-tab">osxQuantum Dashboard</span>
             <span class="mac-dots">...</span>
           </div>
-          <img src="images/screen003.png" alt="QuantumStudio dashboard screenshot" loading="eager">
+          <img src="images/screen003.png" alt="osxQuantum dashboard screenshot" loading="eager">
         </div>
         <div class="hero-float">Unified Memory + Metal GPU</div>
       </div>
@@ -1092,29 +1091,29 @@
 
   <section class="block">
     <div class="container">
-      <h2 class="section-title reveal">QuantumStudio Screens</h2>
+      <h2 class="section-title reveal">osxQuantum Screens</h2>
       <p class="section-subtitle reveal d1">
         Current desktop snapshots from the app workflow.
       </p>
       <div class="media-grid">
         <figure class="media-card reveal">
-          <img src="images/screen001.png" alt="QuantumStudio screen 001" loading="lazy">
+          <img src="images/screen001.png" alt="osxQuantum screen 001" loading="lazy">
           <figcaption>screen001.png</figcaption>
         </figure>
         <figure class="media-card reveal d1">
-          <img src="images/screen002.png" alt="QuantumStudio screen 002" loading="lazy">
+          <img src="images/screen002.png" alt="osxQuantum screen 002" loading="lazy">
           <figcaption>screen002.png</figcaption>
         </figure>
         <figure class="media-card reveal d2">
-          <img src="images/screen003.png" alt="QuantumStudio screen 003" loading="lazy">
+          <img src="images/screen003.png" alt="osxQuantum screen 003" loading="lazy">
           <figcaption>screen003.png</figcaption>
         </figure>
         <figure class="media-card reveal d3">
-          <img src="images/screen004.png" alt="QuantumStudio screen 004" loading="lazy">
+          <img src="images/screen004.png" alt="osxQuantum screen 004" loading="lazy">
           <figcaption>screen004.png</figcaption>
         </figure>
         <figure class="media-card reveal d3">
-          <img src="images/screen005.png" alt="QuantumStudio screen 005" loading="lazy">
+          <img src="images/screen005.png" alt="osxQuantum screen 005" loading="lazy">
           <figcaption>screen005.png</figcaption>
         </figure>
       </div>
@@ -1202,7 +1201,7 @@
             <span class="mac-tab">Run Console</span>
             <span class="mac-dots">...</span>
           </div>
-          <img src="images/screen004.png" alt="QuantumStudio benchmark output screenshot" loading="lazy">
+          <img src="images/screen004.png" alt="osxQuantum benchmark output screenshot" loading="lazy">
         </div>
       </div>
     </div>
@@ -1216,7 +1215,7 @@
           <span class="mac-tab">Circuit Builder</span>
           <span class="mac-dots">...</span>
         </div>
-        <img src="images/screen001.png" alt="QuantumStudio circuit builder" loading="lazy">
+        <img src="images/screen001.png" alt="osxQuantum circuit builder" loading="lazy">
       </div>
       <div class="split-copy">
         <h2 class="reveal d1">On-Device Workflows</h2>
@@ -1233,9 +1232,9 @@
       <div class="split-copy">
         <h2 class="reveal">Publication-Ready Benchmarking</h2>
         <p class="reveal d1">
-          QuantumStudio is built around mlxQ: an MLX-based state-vector simulator for Apple Silicon
-          unified memory. It supports QFT, QAOA, QCBM, Grover, Hamiltonian simulation, and OpenQASM 2.0 import.
-          Benchmarks produce reproducible artifacts and are validated with 150+ executable tests.
+          osxQuantum is built around mlxQ for Apple Silicon unified memory.
+          Because there is currently no native MLX quantum simulator, osxQuantum provides the local state-vector layer and workflow tooling directly in the app.
+          It supports QFT, QAOA, QCBM, Grover, Hamiltonian simulation, and OpenQASM 2.0 import with reproducible artifacts validated by 150+ executable tests.
         </p>
       </div>
       <div class="mini-window reveal d2" aria-hidden="true">
@@ -1244,7 +1243,7 @@
           <span class="mac-tab">Benchmark Report</span>
           <span class="mac-dots">...</span>
         </div>
-        <img src="images/screen005.png" alt="QuantumStudio benchmark report panel" loading="lazy">
+        <img src="images/screen005.png" alt="osxQuantum benchmark report panel" loading="lazy">
       </div>
     </div>
   </section>
@@ -1284,9 +1283,9 @@
 
       <div class="cta-band reveal">
         <div>
-          <h2>Start QuantumStudio on Your Mac</h2>
+          <h2>Start osxQuantum on Your Mac</h2>
           <p>
-            macOS binary distribution is available now. Source code is licensed under BSL-1.1 and binary releases follow the QuantumStudio Binary Distribution License.
+            macOS binary distribution is available now. Source code is licensed under BSL-1.1 and binary releases follow the osxQuantum Binary Distribution License.
           </p>
         </div>
         <div class="hero-actions">
@@ -1297,12 +1296,12 @@
 
       <div class="faq-list" id="faq">
         <article class="faq-item reveal d1">
-          <h3>Does QuantumStudio require internet access?</h3>
+          <h3>Does osxQuantum require internet access?</h3>
           <p>Core simulation runs locally on your Mac. Internet is only needed for things like downloads, purchases, or visiting external resources.</p>
         </article>
         <article class="faq-item reveal d2">
-          <h3>What hardware is supported?</h3>
-          <p>Apple Silicon Macs (M-series). Public benchmark snapshots include 21-25 qubit runs on M-series hardware.</p>
+          <h3>Is there a native MLX quantum simulator today?</h3>
+          <p>No. There is currently no native MLX quantum simulator shipped as a platform runtime, which is why osxQuantum includes a local simulator stack built around mlxQ.</p>
         </article>
         <article class="faq-item reveal d3">
           <h3>Where can I review privacy and license terms?</h3>
@@ -1318,7 +1317,7 @@
         <div class="footer-brand">
           <div class="footer-logo">
             <span class="footer-mark">Q</span>
-            <span class="footer-name">QuantumStudio</span>
+            <span class="footer-name">osxQuantum</span>
           </div>
           <p class="footer-desc">Quantum circuit benchmarks and simulations for Apple Silicon.</p>
           <a class="footer-email" href="mailto:solomon@qneura.ai" aria-label="Email solomon@qneura.ai">
@@ -1355,7 +1354,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <div>&copy; 2026 QuantumStudio. All rights reserved.</div>
+        <div>&copy; 2026 osxQuantum. All rights reserved.</div>
         <div>Made with &hearts; for quantum builders. <a href="https://qneura.ai/apps.html" target="_blank" rel="noopener">QNeura.ai</a></div>
         <div class="footer-badges">
           <span class="footer-badge">macOS</span>

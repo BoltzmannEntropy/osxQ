@@ -1,7 +1,7 @@
 Binary Distribution License
 
 This Binary Distribution License ("License") governs use of the compiled
-binary distribution for osxQ (the "Binary"), including DMG, EXE, and
+binary distribution for osxQuantum (the "Binary"), including DMG and
 app bundles.
 
 1. License Grant
