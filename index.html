@@ -463,10 +463,103 @@
       border-top: 1px solid color-mix(in srgb, var(--line) 74%, transparent);
     }
 
+    .intro-prose {
+      display: grid;
+      gap: 14px;
+      max-width: 94ch;
+      margin-top: 10px;
+      margin-bottom: 6px;
+    }
+
+    .intro-prose p {
+      color: var(--text-muted);
+      font-size: 17px;
+      line-height: 1.66;
+    }
+
+    .paper-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .paper-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      padding: 22px 22px 20px;
+    }
+
+    .paper-card h3 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .paper-card p {
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1.62;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .kpi-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface-subtle);
+      padding: 14px;
+    }
+
+    .kpi-value {
+      display: block;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .kpi-label {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .proof-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      padding: 18px 18px 16px;
+    }
+
+    .proof-card h3 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .proof-card p {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.58;
+    }
+
     .media-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+      gap: 20px;
     }
 
     .media-card {
@@ -490,6 +583,14 @@
       color: var(--text-muted);
       font-size: 13px;
       font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .media-card figcaption strong {
+      display: block;
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 2px;
     }
 
     .plot-grid {
@@ -949,6 +1050,12 @@
       .plot-grid {
         grid-template-columns: 1fr;
       }
+
+      .paper-grid,
+      .proof-grid,
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 560px) {
@@ -997,6 +1104,7 @@
       </a>
 
       <ul class="nav-links" id="navLinks">
+        <li><a href="#research">Research</a></li>
         <li><a href="#features">Features</a></li>
         <li><a href="#formats">Formats</a></li>
         <li><a href="privacy.html">Privacy</a></li>
@@ -1091,30 +1199,209 @@
 
   <section class="block">
     <div class="container">
+      <h2 class="section-title reveal">A Longer Intro: Why osxQuantum Exists</h2>
+      <p class="section-subtitle reveal d1">
+        osxQuantum productizes the core results from our IEEE QSYS paper on mlxQ and unified-memory simulation on Apple Silicon.
+      </p>
+      <div class="intro-prose">
+        <p class="reveal d1">
+          Most high-performance quantum simulators are optimized around CUDA and discrete GPU memory models. Apple Silicon works differently: CPU and GPU share one unified memory pool, which removes explicit host-device copy overhead and simplifies the execution model for state-vector workloads. There is currently no native MLX quantum simulator runtime, so osxQuantum ships a local simulator stack built around mlxQ to close that gap.
+        </p>
+        <p class="reveal d2">
+          In our M1 Max evaluations (32 GB unified memory), mlxQ completed 25-qubit reference workloads including QFT in 7.03 ± 0.12 s, QAOA in 11.07 ± 0.21 s, and Hamiltonian simulation in 40.73 ± 0.82 s. The same architecture supports reproducible benchmark artifacts (CSV/JSON), OpenQASM 2.0 circuit import, and broad algorithm coverage across VQE, QAOA, QCBM, QFT, Grover, and time-evolution workflows.
+        </p>
+        <p class="reveal d3">
+          Reliability is built into the stack: the framework is validated with 230+ regression tests and benchmark alignment against widely used suites and ecosystems, including QASMBench, PennyLane, Yao.jl, and Qulacs. The website experience you are viewing is the product-facing layer over that same technical foundation.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="research">
+    <div class="container">
+      <h2 class="section-title reveal">Architecture and Context</h2>
+      <p class="section-subtitle reveal d1">
+        Key technical points from the IEEE mlxQ paper, translated into practical product guidance for osxQuantum users.
+      </p>
+
+      <div class="paper-grid">
+        <article class="paper-card reveal">
+          <h3>Unified Memory Changes the Model</h3>
+          <p>
+            Apple Silicon is not a discrete GPU workflow. CPU and GPU share one physical memory pool, so state vectors can stay resident without explicit host-device transfers. This reduces orchestration overhead and improves interactive iteration for many NISQ-era workloads.
+          </p>
+        </article>
+        <article class="paper-card reveal d1">
+          <h3>No Native MLX Quantum Runtime</h3>
+          <p>
+            MLX is widely used for ML workloads, but there is currently no native MLX quantum simulator runtime. osxQuantum addresses that gap by providing a local state-vector simulator stack (mlxQ), gate libraries, algorithm modules, and benchmark tooling in one desktop workflow.
+          </p>
+        </article>
+        <article class="paper-card reveal d2">
+          <h3>Paper-Driven Benchmark Scope</h3>
+          <p>
+            The benchmark families follow community baselines and algorithm classes used in research practice: QASMBench/OpenQASM circuits, QFT/phase estimation, variational methods (VQE/QAOA/QCBM), Grover search, and Hamiltonian simulation via Trotter-Suzuki decomposition.
+          </p>
+        </article>
+        <article class="paper-card reveal d3">
+          <h3>Reproducibility by Default</h3>
+          <p>
+            Runs generate structured artifacts with consistent timing outputs and machine-readable exports. The goal is not just raw speed, but repeatable experiment bookkeeping for publication, classroom use, and cross-framework comparison.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
+      <h2 class="section-title reveal">Measured Results (Paper Snapshot)</h2>
+      <p class="section-subtitle reveal d1">
+        Representative measurements from the M1 Max evaluation setup in the IEEE manuscript (32 GB unified memory, Apple Silicon, MLX backend).
+      </p>
+
+      <div class="kpi-grid">
+        <div class="kpi-card reveal">
+          <span class="kpi-value">7.03s</span>
+          <span class="kpi-label">QFT @ 25 qubits</span>
+        </div>
+        <div class="kpi-card reveal d1">
+          <span class="kpi-value">11.07s</span>
+          <span class="kpi-label">QAOA @ 25 qubits</span>
+        </div>
+        <div class="kpi-card reveal d2">
+          <span class="kpi-value">40.73s</span>
+          <span class="kpi-label">Hamiltonian @ 25q</span>
+        </div>
+        <div class="kpi-card reveal d3">
+          <span class="kpi-value">113.26s</span>
+          <span class="kpi-label">Grover @ 25 qubits</span>
+        </div>
+      </div>
+
+      <div class="table-card reveal d2" style="margin-top:20px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Algorithm</th>
+              <th>Qubits</th>
+              <th>Time (s)</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>QFT</td>
+              <td>25</td>
+              <td>7.03 ± 0.12</td>
+              <td>Complete controlled-phase ladder</td>
+            </tr>
+            <tr>
+              <td>QAOA (ring)</td>
+              <td>25</td>
+              <td>11.07 ± 0.21</td>
+              <td>MaxCut-style alternating operator schedule</td>
+            </tr>
+            <tr>
+              <td>QCBM (9 layers)</td>
+              <td>25</td>
+              <td>26.28 ± 0.54</td>
+              <td>Hardware-efficient variational stack</td>
+            </tr>
+            <tr>
+              <td>Hamiltonian Simulation</td>
+              <td>25</td>
+              <td>40.73 ± 0.82</td>
+              <td>Trotter-Suzuki decomposition</td>
+            </tr>
+            <tr>
+              <td>Grover Search</td>
+              <td>25</td>
+              <td>113.26</td>
+              <td>Quadratic search primitive</td>
+            </tr>
+            <tr>
+              <td>VQE (optimization-heavy)</td>
+              <td>15</td>
+              <td>16718.0</td>
+              <td>100 iterations, parameter-shift gradients</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
+      <h2 class="section-title reveal">Validation and Reproducibility</h2>
+      <p class="section-subtitle reveal d1">
+        The paper reports 235 validation tests spanning gate correctness, parser behavior, algorithm outputs, and tutorial-backed educational examples.
+      </p>
+
+      <div class="proof-grid">
+        <article class="proof-card reveal">
+          <h3>235 Tests</h3>
+          <p>Regression coverage includes gate operations, state preparation, algorithm-level checks, and framework parity validations.</p>
+        </article>
+        <article class="proof-card reveal d1">
+          <h3>OpenQASM 2.0</h3>
+          <p>Parser and execution coverage includes single-, two-, and three-qubit gate families with user-defined gate inlining and practical benchmark circuit compatibility.</p>
+        </article>
+        <article class="proof-card reveal d2">
+          <h3>Cross-Framework Alignment</h3>
+          <p>Benchmark families are aligned with widely used ecosystems (PennyLane, Yao.jl, Qulacs, QuantumToolbox.jl, QASMBench) for stronger external comparability.</p>
+        </article>
+        <article class="proof-card reveal d3">
+          <h3>Artifact Exports</h3>
+          <p>Timing outputs and benchmark summaries are emitted as machine-readable CSV/JSON artifacts for independent reruns and publication appendices.</p>
+        </article>
+        <article class="proof-card reveal d3">
+          <h3>Memory Envelope</h3>
+          <p>Complex64 state vectors scale from 8 MB at 20 qubits to 256 MB at 25 qubits, 8 GB at 30 qubits, and 256 GB at 35 qubits.</p>
+        </article>
+        <article class="proof-card reveal d3">
+          <h3>Local-First Workflow</h3>
+          <p>Benchmark orchestration, queueing, logs, and output review run locally on macOS, minimizing external dependencies during experiment cycles.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
       <h2 class="section-title reveal">osxQuantum Screens</h2>
       <p class="section-subtitle reveal d1">
-        Current desktop snapshots from the app workflow.
+        Current desktop snapshots from a complete local workflow: benchmark selection, run orchestration, live logs, and export-ready outputs.
       </p>
+      <div class="intro-prose">
+        <p class="reveal d1">
+          This gallery maps directly to the research workflow described in the paper: define workload families, launch runs with fixed parameters, monitor state-vector execution on Apple Silicon, and collect comparable artifacts for analysis.
+        </p>
+        <p class="reveal d2">
+          Instead of isolated screenshots, read this section as one continuous pipeline from circuit definition to reproducible report output.
+        </p>
+      </div>
       <div class="media-grid">
         <figure class="media-card reveal">
           <img src="images/screen001.png" alt="osxQuantum screen 001" loading="lazy">
-          <figcaption>screen001.png</figcaption>
+          <figcaption><strong>Circuit Workspace</strong>Build and inspect gate-level circuit structure before execution.</figcaption>
         </figure>
         <figure class="media-card reveal d1">
           <img src="images/screen002.png" alt="osxQuantum screen 002" loading="lazy">
-          <figcaption>screen002.png</figcaption>
+          <figcaption><strong>Run Configuration</strong>Set qubit ranges, benchmark families, and simulator controls for reproducible runs.</figcaption>
         </figure>
         <figure class="media-card reveal d2">
           <img src="images/screen003.png" alt="osxQuantum screen 003" loading="lazy">
-          <figcaption>screen003.png</figcaption>
+          <figcaption><strong>Operations Dashboard</strong>Track queue state, current job progress, and system context while jobs run locally.</figcaption>
         </figure>
         <figure class="media-card reveal d3">
           <img src="images/screen004.png" alt="osxQuantum screen 004" loading="lazy">
-          <figcaption>screen004.png</figcaption>
+          <figcaption><strong>Runtime Console</strong>Review execution logs and intermediate benchmark artifacts during long experiments.</figcaption>
         </figure>
         <figure class="media-card reveal d3">
           <img src="images/screen005.png" alt="osxQuantum screen 005" loading="lazy">
-          <figcaption>screen005.png</figcaption>
+          <figcaption><strong>Results and Reports</strong>Inspect plots and exported summaries for publication and cross-framework comparison.</figcaption>
         </figure>
       </div>
     </div>
@@ -1186,7 +1473,7 @@
                 </tr>
                 <tr>
                   <td>Validation</td>
-                  <td>150+ executable tests</td>
+                  <td>230+ executable tests</td>
                   <td>Correctness and regression checks</td>
                   <td>Includes educational QIT verification appendix</td>
                 </tr>
