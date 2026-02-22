@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>osxQuantum - Apple Silicon Quantum Benchmarking</title>
-  <meta name="description" content="osxQuantum is a local macOS quantum benchmark studio built on mlxQ for Apple Silicon, with exportable results and reproducible workflows.">
+  <meta name="description" content="osxQuantum is a four-part project: the research paper, the osxQ simulator, the QuantumStudio UI, and an exhaustive worked-problem book.">
   <meta property="og:title" content="osxQuantum - Apple Silicon Quantum Benchmarking">
   <meta property="og:description" content="A clean macOS experience for running quantum benchmarks on Apple Silicon.">
   <meta property="og:type" content="website">
@@ -1104,6 +1104,7 @@
       </a>
 
       <ul class="nav-links" id="navLinks">
+        <li><a href="#project-parts">Project Parts</a></li>
         <li><a href="#research">Research</a></li>
         <li><a href="#features">Features</a></li>
         <li><a href="#formats">Formats</a></li>
@@ -1130,7 +1131,7 @@
             </svg>
           </button>
         </div>
-        <a href="#download" class="nav-cta desktop-download">Download</a>
+        <a id="download-link-nav" href="https://github.com/BoltzmannEntropy/osxQ/releases/download/v1.0.0/QuantumStudio-1.0.0-macos.dmg" class="nav-cta desktop-download">Download</a>
       </div>
 
       <button class="mobile-toggle" id="mobileToggle" aria-label="Open navigation">
@@ -1157,8 +1158,8 @@
         </h1>
 
         <p class="reveal d2">
-          osxQuantum is an offline-first benchmark studio built on mlxQ.
-          There is no native MLX quantum simulator available today, so osxQuantum ships a local simulator stack for QFT, QAOA, VQE, Hamiltonian workflows, and OpenQASM runs.
+          osxQuantum is a four-part project: a peer-reviewed paper, the osxQ simulator stack, the QuantumStudio desktop UI, and an exhaustive problem book with worked solutions.
+          There is no native MLX quantum simulator available today, so osxQ provides a local simulator layer for QFT, QAOA, VQE, Hamiltonian workflows, and OpenQASM runs.
         </p>
 
         <div class="chip-row reveal d2">
@@ -1168,13 +1169,13 @@
         </div>
 
         <div class="hero-actions reveal d3">
-          <a href="#download" class="btn-primary">
+          <a id="download-link-hero" href="https://github.com/BoltzmannEntropy/osxQ/releases/download/v1.0.0/QuantumStudio-1.0.0-macos.dmg" class="btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Download on macOS
+            Download for macOS
           </a>
           <a href="#features" class="btn-secondary">Explore Features</a>
         </div>
@@ -1196,6 +1197,41 @@
       </div>
     </div>
   </header>
+
+  <section class="block" id="project-parts">
+    <div class="container">
+      <h2 class="section-title reveal">One Project, Four Parts</h2>
+      <p class="section-subtitle reveal d1">
+        QuantumStudio combines research, software, and pedagogy in one workflow that moves from theory to execution to verification.
+      </p>
+      <div class="paper-grid">
+        <article class="paper-card reveal">
+          <h3>1) The Paper</h3>
+          <p>
+            The paper defines the benchmark methods, hardware assumptions, algorithm coverage, and measured results on Apple Silicon. It is the technical reference for claims made across the project.
+          </p>
+        </article>
+        <article class="paper-card reveal d1">
+          <h3>2) The osxQ Simulator</h3>
+          <p>
+            osxQ (mlxQ-based) is the local simulation engine. It implements state-vector execution, gate libraries, algorithm routines, and OpenQASM support for reproducible runs on macOS.
+          </p>
+        </article>
+        <article class="paper-card reveal d2">
+          <h3>3) The QuantumStudio UI</h3>
+          <p>
+            QuantumStudio is the desktop interface for configuring runs, launching benchmark suites, monitoring execution, and exporting structured artifacts for analysis and reporting.
+          </p>
+        </article>
+        <article class="paper-card reveal d3">
+          <h3>4) The Exhaustive Book</h3>
+          <p>
+            The companion book consolidates extensive problem sets and worked solutions, aligned with the simulator and paper benchmarks, so students can solve by hand and validate with osxQ.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
 
   <section class="block">
     <div class="container">
@@ -1572,7 +1608,7 @@
         <div>
           <h2>Start osxQuantum on Your Mac</h2>
           <p>
-            macOS binary distribution is available now. Source code is licensed under BSL-1.1 and binary releases follow the osxQuantum Binary Distribution License.
+            macOS binary distribution is available now. Source code is licensed under BSL-1.1 and binary releases follow the QuantumStudio Binary Distribution License.
           </p>
         </div>
         <div class="hero-actions">
