@@ -1666,7 +1666,13 @@
             <span style="font-size: 24px; line-height: 1; color: var(--accent);">&#9998;</span>
             <div>
               <h4 style="margin: 0 0 6px; font-size: 16px; font-weight: 700; color: var(--accent);">Unsigned Build</h4>
-              <p style="margin: 0; font-size: 14px; color: var(--text-muted); line-height: 1.5;">This macOS build is not signed by Apple. You may need to right-click the app and select "Open" the first time you run it, or go to System Settings &rarr; Privacy &amp; Security to allow it.</p>
+              <p style="margin: 0; font-size: 14px; color: var(--text-muted); line-height: 1.5;">This macOS build is not signed by Apple. Remove the quarantine attribute in Terminal before first launch:</p>
+              <pre style="margin: 8px 0 0; padding: 10px 12px; background: rgba(0,0,0,0.06); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; color: var(--text); font-size: 12px; line-height: 1.4;"><code># If installed to /Applications (system-wide):
+xattr -d com.apple.quarantine /Applications/QuantumStudio.app
+
+# If installed to ~/Applications (user-only):
+xattr -d com.apple.quarantine ~/Applications/QuantumStudio.app</code></pre>
+              <p style="margin: 8px 0 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">Why? macOS quarantines downloaded apps. For unsigned apps, Gatekeeper may block execution until this flag is removed.</p>
             </div>
           </div>
         </div>
