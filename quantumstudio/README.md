@@ -75,6 +75,7 @@ For commercial licensing, contact solomon@qneura.ai.
 
 ### QuantumStudio UI
 
+![QuantumStudio Circuits QASM](assets/screenshots/quantumstudio-circuits-qasm-2026-05-06.jpeg)
 ![QuantumStudio Screen 1](assets/screenshots/screen001.png)
 ![QuantumStudio Screen 2](assets/screenshots/screen002.png)
 ![QuantumStudio Screen 3](assets/screenshots/screen003.png)
