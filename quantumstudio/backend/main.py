@@ -1584,11 +1584,19 @@ def _normalize_run_outputs(outputs: Any) -> Dict[str, List[Dict[str, str]]]:
             if resolved is None:
                 continue
 
-            # Always emit URL relative to BENCH_DIR for stable serving.
+            # Always emit URL relative to the canonical bench root for stable serving.
             try:
                 canonical_rel = resolved.relative_to(BENCH_DIR).as_posix()
             except Exception:
-                canonical_rel = resolved.name
+                try:
+                    canonical_rel = resolved.relative_to(MLX_ROOT / "bench").as_posix()
+                except Exception:
+                    parts = resolved.as_posix().split("/")
+                    if "runs" in parts:
+                        idx = parts.index("runs")
+                        canonical_rel = "/".join(parts[idx:])
+                    else:
+                        canonical_rel = resolved.name
             url = f"/bench/{canonical_rel}"
             key = f"{name}|{url}"
             if key in seen:
