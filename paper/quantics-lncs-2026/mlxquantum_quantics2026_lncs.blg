@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2022)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: mlxquantum_quantics2026_lncs.aux
+The style file: splncs04.bst
+Database file #1: references.bib
+You've used 26 entries,
+            2850 wiz_defined-function locations,
+            752 strings with 9283 characters,
+and the built_in function-call counts, 12825 in all, are:
+= -- 972
+> -- 472
+< -- 15
++ -- 197
+- -- 168
+* -- 806
+:= -- 1689
+add.period$ -- 22
+call.type$ -- 26
+change.case$ -- 162
+chr.to.int$ -- 0
+cite$ -- 26
+duplicate$ -- 1118
+empty$ -- 1178
+format.name$ -- 183
+if$ -- 2746
+int.to.chr$ -- 0
+int.to.str$ -- 26
+missing$ -- 233
+newline$ -- 84
+num.names$ -- 52
+pop$ -- 514
+preamble$ -- 1
+purify$ -- 133
+quote$ -- 0
+skip$ -- 335
+stack$ -- 0
+substring$ -- 588
+swap$ -- 587
+text.length$ -- 15
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 102
+warning$ -- 0
+while$ -- 102
+width$ -- 28
+write$ -- 245

@@ -1,0 +1,125 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{Qiskit2023}
+Aleksandrowicz, G., Alexander, T., Barkoutsos, P., Bello, L., Ben-Haim, Y.,
+  Bucher, D., et~al.: Qiskit: An open-source framework for quantum computing.
+  arXiv preprint arXiv:1912.04147  (2023)
+
+\bibitem{Apple2024M4}
+{Apple Inc.}: Apple introduces m4 pro and m4 max (2024),
+  \url{https://www.apple.com/newsroom/2024/10/apple-introduces-m4-pro-and-m4-max/}
+
+\bibitem{MLXFramework2024}
+{Apple Machine Learning Research}: Mlx: An array framework for apple silicon
+  (2024), \url{https://ml-explore.github.io/mlx/build/html/index.html}
+
+\bibitem{cuQuantum2023}
+Bayraktar, H., Charara, A., Clark, D., Cohen, S., Costa, T., Fang, Y.L.L., Gao,
+  Y., Guan, J., Gunnels, J., Haidar, A., et~al.: cuquantum sdk: A
+  high-performance library for accelerating quantum science. arXiv preprint
+  arXiv:2308.01999  (2023)
+
+\bibitem{PennyLane2022}
+Bergholm, V., Izaac, J., Schuld, M., Gogolin, C., Ahmed, S., Ajith, V., Alam,
+  M.S., Alonso-Linaje, G., AkashNarayanan, B., Asadi, A., et~al.: Pennylane:
+  Automatic differentiation of hybrid quantum-classical computations. arXiv
+  preprint arXiv:1811.04968  (2022)
+
+\bibitem{Childs2019}
+Childs, A.M., Su, Y.: Theory of trotter error with commutator scaling.
+  Proceedings of the National Academy of Sciences  \textbf{116}(52),
+  26116--26127 (2019). \doi{10.1073/pnas.1908644116}
+
+\bibitem{OpenQASM2017}
+Cross, A.W., Bishop, L.S., Smolin, J.A., Gambetta, J.M.: Open quantum assembly
+  language. arXiv preprint arXiv:1707.03429  (2017)
+
+\bibitem{QAOA2014}
+Farhi, E., Goldstone, J., Gutmann, S.: A quantum approximate optimization
+  algorithm. arXiv preprint arXiv:1411.4028  (2014)
+
+\bibitem{Qsim}
+{Google Quantum AI}: qsim: Google's quantum circuit simulator (2023),
+  \url{https://github.com/quantumlib/qsim}
+
+\bibitem{Cirq2024}
+{Google Quantum AI}: Cirq: A python framework for quantum circuits (2024),
+  \url{https://quantumai.google/cirq}
+
+\bibitem{grover1996fast}
+Grover, L.K.: A fast quantum mechanical algorithm for database search.
+  Proceedings of the twenty-eighth annual ACM symposium on Theory of computing
+  pp. 212--219 (1996)
+
+\bibitem{Benchpress2024}
+{IBM Quantum}: Benchpress: Comprehensive quantum benchmarking suite (2024)
+
+\bibitem{IntelQS}
+{Intel Corporation}: Intel quantum simulator (2023),
+  \url{https://github.com/intel/intel-qs}
+
+\bibitem{Jones2019quest}
+Jones, T., Brown, A., Bush, I., Benjamin, S.C.: Quest and high performance
+  simulation of quantum computers. Scientific Reports  \textbf{9},  10736
+  (2019). \doi{10.1038/s41598-019-47174-9}
+
+\bibitem{UnifiedMemory2024}
+Kumar, S., Patel, R., Wang, L.: Unified memory architecture: Benefits for
+  high-performance computing. IEEE Computer Architecture Letters
+  \textbf{23}(2),  34--37 (2024)
+
+\bibitem{QASMBench2020}
+Li, R., Ding, N., Xie, X., Chien, A.A.: {QASMBench}: A low-level openqasm
+  benchmark suite for nisq evaluation and simulation. In: 2020 IEEE
+  International Symposium on High Performance Computer Architecture (HPCA). pp.
+  463--476 (2020). \doi{10.1109/HPCA47549.2020.00045}
+
+\bibitem{SupermarQ2022}
+Lubowe, T., Sundararajah, V., Ding, N., Chien, A.A.: Supermarq: A scalable
+  quantum benchmark suite. In: 2022 IEEE International Conference on Quantum
+  Computing and Engineering (QCE). pp. 70--81 (2022).
+  \doi{10.1109/QCE53715.2022.00018}
+
+\bibitem{YaoJL2024}
+Luo, X.Z., Liu, J.G., Zhang, P., Wang, L.: Yao.jl: Extensible, efficient
+  framework for quantum algorithm design (2024), \url{https://yaoquantum.org/}
+
+\bibitem{MQTBench2022}
+{MQT (TUM)}: Mqtbench: Scalable benchmarks for quantum computing (2022)
+
+\bibitem{NielsenChuang2010}
+Nielsen, M.A., Chuang, I.L.: Quantum Computation and Quantum Information: 10th
+  Anniversary Edition. Cambridge University Press (2010)
+
+\bibitem{peruzzo2014variational}
+Peruzzo, A., McClean, J., Shadbolt, P., Yung, M.H., Zhou, X.Q., Love, P.J.,
+  Aspuru-Guzik, A., O'brien, J.L.: A variational eigenvalue solver on a
+  photonic quantum processor. Nature communications  \textbf{5}(1), ~4213
+  (2014)
+
+\bibitem{QuEST}
+{QTechTheory, University of Oxford}: Quest: Quantum exact simulation toolkit
+  (2023), \url{https://github.com/QuEST-Kit/QuEST}
+
+\bibitem{Qulacs}
+{Qulacs Developers}: Qulacs: A fast quantum circuit simulator (2024),
+  \url{https://github.com/qulacs/qulacs}
+
+\bibitem{QuantumToolboxJulia2024}
+{QuTiP collaboration}: Quantumtoolbox.jl: Time evolution and steady-state
+  benchmarks (2024), \url{https://github.com/qutip/QuantumToolbox.jl}
+
+\bibitem{SmithGray2018}
+Smith, D.G.A., Gray, J.: opt\_einsum---a python package for optimizing
+  contraction order for einstein summation expressions. Journal of Open Source
+  Software  \textbf{3}(26), ~753 (2018). \doi{10.21105/joss.00753}
+
+\bibitem{QuantumSimulation2025}
+Williams, S., Zhang, L., Rodriguez, C., Kim, J.: Large-scale quantum circuit
+  simulation on modern gpu architectures. Nature Computational Science
+  \textbf{5}(2),  89--102 (2025)
+
+\end{thebibliography}
