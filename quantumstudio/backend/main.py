@@ -25,8 +25,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, PlainTextResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from pydantic import BaseModel, Field, field_validator
 
 APP_ROOT = Path(__file__).resolve().parent
@@ -1002,22 +1001,42 @@ def _collect_outputs(
 ) -> Dict[str, List[Dict[str, str]]]:
     images: List[Dict[str, str]] = []
     data: List[Dict[str, str]] = []
-    for path in sorted(BENCH_DIR.rglob("*")):
-        if not path.is_file():
-            continue
-        rel_path = path.relative_to(BENCH_DIR).as_posix()
-        if rel_path in existing and path.stat().st_mtime < started_at:
-            continue
-        # Filter to files matching the benchmarks that were actually run
-        if benchmark_names:
-            stem = path.stem.lower()
-            if not any(bname in stem for bname in benchmark_names):
+    scan_roots: List[Path] = []
+    for root in [BENCH_DIR, MLX_ROOT / "bench"]:
+        if root.exists() and root not in scan_roots:
+            scan_roots.append(root)
+
+    seen_urls: set[str] = set()
+    for root in scan_roots:
+        for path in sorted(root.rglob("*")):
+            if not path.is_file():
                 continue
-        url = f"/bench/{rel_path}"
-        if path.suffix.lower() in {".png", ".jpg", ".jpeg"}:
-            images.append({"name": path.name, "url": url})
-        elif path.suffix.lower() in {".csv", ".json", ".md", ".txt"}:
-            data.append({"name": path.name, "url": url})
+            rel_path = path.relative_to(root).as_posix()
+            # Avoid emitting unstable top-level aliases when the canonical
+            # artifact exists in runs/... (prevents 404 image links in UI).
+            if "/" not in rel_path:
+                runs_dir = root / "runs"
+                if runs_dir.exists():
+                    try:
+                        if any(True for _ in runs_dir.glob(f"**/{path.name}")):
+                            continue
+                    except Exception:
+                        pass
+            if rel_path in existing and path.stat().st_mtime < started_at:
+                continue
+            # Filter to files matching the benchmarks that were actually run
+            if benchmark_names:
+                stem = path.stem.lower()
+                if not any(bname in stem for bname in benchmark_names):
+                    continue
+            url = f"/bench/{rel_path}"
+            if url in seen_urls:
+                continue
+            seen_urls.add(url)
+            if path.suffix.lower() in {".png", ".jpg", ".jpeg"}:
+                images.append({"name": path.name, "url": url})
+            elif path.suffix.lower() in {".csv", ".json", ".md", ".txt"}:
+                data.append({"name": path.name, "url": url})
     return {"images": images, "data": data}
 
 
@@ -1270,7 +1289,70 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 _ensure_paths()
 _load_persisted_runs()
-app.mount("/bench", StaticFiles(directory=str(BENCH_DIR)), name="bench")
+def _resolve_bench_asset(asset_path: str) -> Optional[Path]:
+    rel = asset_path.strip().lstrip("/")
+    if not rel:
+        return None
+    rel_path = Path(rel)
+    if rel_path.is_absolute() or ".." in rel_path.parts:
+        return None
+
+    roots = [BENCH_DIR, MLX_ROOT / "bench"]
+    for root in roots:
+        try:
+            candidate = (root / rel_path).resolve()
+            if candidate.exists() and candidate.is_file():
+                try:
+                    candidate.relative_to(root.resolve())
+                except ValueError:
+                    continue
+                return candidate
+        except Exception:
+            continue
+
+    # Legacy compatibility: UI may request flattened names, so search by basename.
+    if "/" not in rel and "\\" not in rel:
+        best: Optional[Path] = None
+        for root in roots:
+            if not root.exists():
+                continue
+            try:
+                direct = root / rel
+                if direct.exists() and direct.is_file():
+                    if best is None or direct.stat().st_mtime > best.stat().st_mtime:
+                        best = direct
+                runs_dir = root / "runs"
+                if runs_dir.exists() and runs_dir.is_dir():
+                    iterator = runs_dir.glob(f"**/{rel}")
+                else:
+                    continue
+            except Exception:
+                continue
+            for hit in iterator:
+                try:
+                    if not hit.is_file():
+                        continue
+                    if best is None or hit.stat().st_mtime > best.stat().st_mtime:
+                        best = hit
+                except Exception:
+                    continue
+        return best
+
+    return None
+
+
+@app.get("/bench/{asset_path:path}")
+async def serve_bench_asset(asset_path: str):
+    try:
+        resolved = _resolve_bench_asset(asset_path)
+        if resolved is None:
+            raise HTTPException(status_code=404, detail="Bench asset not found")
+        return FileResponse(str(resolved))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("bench_asset_serve_failed path=%s", asset_path)
+        raise HTTPException(status_code=404, detail="Bench asset not found")
 logger.info("QuantumStudio backend initialized (loaded %d persisted runs)", len(RUNS))
 logger.info(
     "Runtime controls: auth_enabled=%s rate_limit_enabled=%s default_limit=%d/%ds heavy_limit=%d/%ds run_limit=%d/%ds",
@@ -1468,7 +1550,57 @@ async def start_run(payload: RunRequest) -> Dict[str, Any]:
 
 def _sanitize_run(run: Dict[str, Any]) -> Dict[str, Any]:
     """Remove internal fields before returning to API."""
-    return {k: v for k, v in run.items() if not k.startswith("_")}
+    clean = {k: v for k, v in run.items() if not k.startswith("_")}
+    clean["outputs"] = _normalize_run_outputs(clean.get("outputs"))
+    return clean
+
+
+def _normalize_run_outputs(outputs: Any) -> Dict[str, List[Dict[str, str]]]:
+    if not isinstance(outputs, dict):
+        return {"images": [], "data": []}
+
+    def _normalize_items(items: Any) -> List[Dict[str, str]]:
+        normalized: List[Dict[str, str]] = []
+        if not isinstance(items, list):
+            return normalized
+        seen: set[str] = set()
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("name", "")).strip()
+            raw_url = str(item.get("url", "")).strip()
+            if not name:
+                continue
+            rel = raw_url
+            if rel.startswith("/bench/"):
+                rel = rel[len("/bench/"):]
+            elif rel.startswith("/"):
+                rel = rel[1:]
+            rel = rel.strip("/")
+
+            resolved = _resolve_bench_asset(rel or name)
+            if resolved is None:
+                resolved = _resolve_bench_asset(name)
+            if resolved is None:
+                continue
+
+            # Always emit URL relative to BENCH_DIR for stable serving.
+            try:
+                canonical_rel = resolved.relative_to(BENCH_DIR).as_posix()
+            except Exception:
+                canonical_rel = resolved.name
+            url = f"/bench/{canonical_rel}"
+            key = f"{name}|{url}"
+            if key in seen:
+                continue
+            seen.add(key)
+            normalized.append({"name": name, "url": url})
+        return normalized
+
+    return {
+        "images": _normalize_items(outputs.get("images")),
+        "data": _normalize_items(outputs.get("data")),
+    }
 
 
 def _update_run_flags(run: Dict[str, Any]) -> Dict[str, Any]:

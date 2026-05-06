@@ -14,6 +14,42 @@ const _statusWarning = Color(0xFFFF9F0A);
 const _logBackgroundColor = Color(0xFF0F1115);
 const _logTextColor = Color(0xFF9BD3FF);
 const _logHeaderColor = Color(0xFF6CB4EE);
+const List<Map<String, dynamic>> _fallbackBenchmarks = [
+  {
+    'name': 'hamiltonian_simulation',
+    'label': 'Hamiltonian Simulation',
+    'max_qubits': 30,
+  },
+  {'name': 'time_evolution', 'label': 'Time Evolution', 'max_qubits': 30},
+  {'name': 'trotter', 'label': 'Trotter', 'max_qubits': 30},
+  {'name': 'heisenberg', 'label': 'Heisenberg', 'max_qubits': 30},
+  {'name': 'heisenberg_xxz', 'label': 'Heisenberg XXZ', 'max_qubits': 25},
+  {
+    'name': 'heisenberg_random_field',
+    'label': 'Heisenberg Random Field',
+    'max_qubits': 25,
+  },
+  {'name': 'tfim', 'label': 'TFIM', 'max_qubits': 25},
+  {'name': 'tfim_trotter2', 'label': 'TFIM Trotter2', 'max_qubits': 25},
+  {'name': 'tfim_random_field', 'label': 'TFIM Random Field', 'max_qubits': 25},
+  {'name': 'long_range_ising', 'label': 'Long-Range Ising', 'max_qubits': 25},
+  {'name': 'ladder_heisenberg', 'label': 'Ladder Heisenberg', 'max_qubits': 25},
+  {'name': 'steady_state', 'label': 'Steady State', 'max_qubits': 12},
+  {'name': 'random_circuit', 'label': 'Random Circuit', 'max_qubits': 25},
+  {'name': 'qcbm', 'label': 'QCBM', 'max_qubits': 25},
+  {'name': 'phase_estimation', 'label': 'Phase Estimation', 'max_qubits': 12},
+  {'name': 'qft', 'label': 'QFT', 'max_qubits': 12},
+  {'name': 'qaoa', 'label': 'QAOA', 'max_qubits': 25},
+  {'name': 'vqe', 'label': 'VQE', 'max_qubits': 15},
+  {
+    'name': 'variational_circuit',
+    'label': 'Variational Circuit',
+    'max_qubits': 25,
+  },
+  {'name': 'grover', 'label': 'Grover', 'max_qubits': 25},
+  {'name': 'ghz', 'label': 'GHZ', 'max_qubits': 25},
+  {'name': 'qasm', 'label': 'QASM', 'max_qubits': 18},
+];
 
 class BenchmarksScreen extends StatefulWidget {
   const BenchmarksScreen({super.key});
@@ -53,6 +89,8 @@ class _BenchmarksScreenState extends State<BenchmarksScreen> {
   Map<String, dynamic>? _selectedRun;
   String _logText = '';
   Timer? _poller;
+  Timer? _benchmarksRetryTimer;
+  bool _bootstrapRefreshScheduled = false;
   final ScrollController _logScrollController = ScrollController();
 
   // Queue status
@@ -71,6 +109,7 @@ class _BenchmarksScreenState extends State<BenchmarksScreen> {
   @override
   void dispose() {
     _poller?.cancel();
+    _benchmarksRetryTimer?.cancel();
     _logScrollController.dispose();
     _qubitsController.dispose();
     _simulateCapController.dispose();
@@ -92,6 +131,7 @@ class _BenchmarksScreenState extends State<BenchmarksScreen> {
     });
     if (ok) {
       await Future.wait([_loadBenchmarks(), _loadRuns(), _loadSystemInfo()]);
+      _scheduleBenchmarksRetryIfNeeded();
     }
     if (!mounted) return;
     setState(() => _loading = false);
@@ -100,24 +140,86 @@ class _BenchmarksScreenState extends State<BenchmarksScreen> {
   Future<void> _loadBenchmarks() async {
     try {
       final list = await _api.getBenchmarks();
+      final effectiveList = list.isEmpty
+          ? _fallbackBenchmarks
+                .map((e) => Map<String, dynamic>.from(e))
+                .toList()
+          : list;
       if (!mounted) return;
       final nextSelected = <String, bool>{};
-      for (final item in list) {
+      for (final item in effectiveList) {
         final name = item['name'] as String?;
         if (name != null) {
           nextSelected[name] = _selected[name] ?? true;
         }
       }
       setState(() {
-        _benchmarks = list;
+        _benchmarks = effectiveList;
         _selected
           ..clear()
           ..addAll(nextSelected);
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _benchmarks = []);
+      final nextSelected = <String, bool>{};
+      final fallback = _fallbackBenchmarks
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
+      for (final item in fallback) {
+        final name = item['name'] as String?;
+        if (name != null) {
+          nextSelected[name] = _selected[name] ?? true;
+        }
+      }
+      setState(() {
+        _benchmarks = fallback;
+        _selected
+          ..clear()
+          ..addAll(nextSelected);
+      });
+      _scheduleBenchmarksRetryIfNeeded();
     }
+  }
+
+  void _scheduleBenchmarksRetryIfNeeded() {
+    _benchmarksRetryTimer?.cancel();
+    if (!_backendReady || _benchmarks.isNotEmpty) {
+      return;
+    }
+    _benchmarksRetryTimer = Timer.periodic(const Duration(seconds: 2), (
+      timer,
+    ) async {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_benchmarks.isNotEmpty || !_backendReady) {
+        timer.cancel();
+        return;
+      }
+      await _loadBenchmarks();
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_benchmarks.isNotEmpty) {
+        timer.cancel();
+      }
+    });
+  }
+
+  void _ensureBenchmarksLoadedAfterFirstFrame() {
+    if (_bootstrapRefreshScheduled ||
+        !_backendReady ||
+        _benchmarks.isNotEmpty) {
+      return;
+    }
+    _bootstrapRefreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await _loadBenchmarks();
+      _scheduleBenchmarksRetryIfNeeded();
+    });
   }
 
   Future<void> _loadRuns() async {
@@ -448,6 +550,7 @@ class _BenchmarksScreenState extends State<BenchmarksScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _ensureBenchmarksLoadedAfterFirstFrame();
     return _loading
         ? const Center(child: CircularProgressIndicator())
         : Column(
@@ -1503,7 +1606,9 @@ class _BenchmarksScreenState extends State<BenchmarksScreen> {
   Widget _buildOutputsCard() {
     final colorScheme = Theme.of(context).colorScheme;
     final outputs = _selectedRun?['outputs'] as Map<String, dynamic>?;
-    final images = outputs?['images'] as List<dynamic>? ?? [];
+    final images = _normalizedImageOutputs(
+      outputs?['images'] as List<dynamic>?,
+    );
     final data = outputs?['data'] as List<dynamic>? ?? [];
 
     return Card(
@@ -1562,6 +1667,20 @@ class _BenchmarksScreenState extends State<BenchmarksScreen> {
                                     child: Image.network(
                                       url,
                                       fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Container(
+                                                height: 120,
+                                                color: colorScheme
+                                                    .surfaceContainerHighest,
+                                                alignment: Alignment.center,
+                                                child: const Text(
+                                                  'Image unavailable',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ),
                                     ),
                                   ),
                                   const SizedBox(height: 6),
@@ -1660,7 +1779,12 @@ class _BenchmarksScreenState extends State<BenchmarksScreen> {
                   child: InteractiveViewer(
                     minScale: 0.8,
                     maxScale: 4,
-                    child: Image.network(url, fit: BoxFit.contain),
+                    child: Image.network(
+                      url,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Center(child: Text('Image unavailable')),
+                    ),
                   ),
                 ),
               ),
@@ -1669,6 +1793,31 @@ class _BenchmarksScreenState extends State<BenchmarksScreen> {
         ),
       ),
     );
+  }
+
+  List<Map<String, dynamic>> _normalizedImageOutputs(List<dynamic>? raw) {
+    final items = (raw ?? const <dynamic>[])
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    final byName = <String, Map<String, dynamic>>{};
+    for (final item in items) {
+      final name = (item['name'] ?? '').toString();
+      if (name.isEmpty) continue;
+      final url = (item['url'] ?? '').toString();
+      final prev = byName[name];
+      if (prev == null) {
+        byName[name] = item;
+        continue;
+      }
+      final prevUrl = (prev['url'] ?? '').toString();
+      final currentIsRunPath = url.contains('/runs/');
+      final prevIsRunPath = prevUrl.contains('/runs/');
+      if (currentIsRunPath && !prevIsRunPath) {
+        byName[name] = item;
+      }
+    }
+    return byName.values.toList();
   }
 
   void _showDataPreview(String name, String url) {
