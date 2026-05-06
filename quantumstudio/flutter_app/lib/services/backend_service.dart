@@ -127,6 +127,37 @@ class BackendService {
     _lastStartupError = null;
     _isStarting = true;
     try {
+      final launcherScript = path.join(backendPath, 'run_backend.sh');
+      if (File(launcherScript).existsSync()) {
+        final launcherEnv = <String, String>{
+          ...Platform.environment,
+          'QUANTUMSTUDIO_BACKEND_PORT': '$_port',
+        };
+        final process = await Process.start(
+          launcherScript,
+          const [],
+          workingDirectory: backendPath,
+          environment: launcherEnv,
+        );
+        _backendProcess = process;
+
+        process.stdout.transform(const SystemEncoding().decoder).listen((data) {
+          debugPrint('[QuantumStudio backend] $data');
+        });
+        process.stderr.transform(const SystemEncoding().decoder).listen((data) {
+          debugPrint('[QuantumStudio backend error] $data');
+        });
+
+        final started = await _waitForBackend(
+          timeout: const Duration(minutes: 2),
+        );
+        if (!started) {
+          _lastStartupError =
+              'Backend launcher script failed health checks on port $_port.';
+        }
+        return started;
+      }
+
       final pythonBin = _resolvePython(backendPath);
       if (pythonBin == null) {
         _lastStartupError = 'No usable Python runtime was found for backend.';
