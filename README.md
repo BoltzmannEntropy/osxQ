@@ -1,292 +1,203 @@
 <div align="center">
-  <img src="assets/mlx_logo.png" alt="mlxQ Logo" width="360"/>
-  <h1>mlxQ / QuantumStudio</h1>
-  <p>Apple Silicon quantum simulation stack with two execution modes:<br><b>Command-line benchmark runners</b> and <b>QuantumStudio desktop UI</b>.</p>
+  <img src="quantumstudio/assets/app_icon_source.png" alt="osxQ Logo" width="220"/>
+  <h1>osxQ / QuantumStudio</h1>
+  <p><b>Apple Silicon quantum benchmarking stack</b> with a local simulator, reproducible benchmark pipelines, and a desktop UI.</p>
 </div>
 
-> Website: https://boltzmannentropy.github.io/osxQuantumWEB/  
-> Code repository: https://github.com/BoltzmannEntropy/osxQ
+- Website: https://boltzmannentropy.github.io/osxQuantumWEB/
+- Repository: https://github.com/BoltzmannEntropy/osxQ
+- Camera-ready PDF: `QUANTICS_2026_14_CR.pdf`
+- Paper source: `paper/quantics-lncs-2026/mlxquantum_quantics2026_lncs.tex`
 
-## What This Repository Contains
+## Extended Introduction
 
-This repository has two complementary interfaces:
+osxQ exists to make Apple Silicon quantum benchmarking practical, local-first, and reproducible. The project packages three layers into one workflow:
 
-1. **CLI benchmark workflow (paper-grade runs)**
-- Main launchers: `bench.sh`, `bench_with_logging.sh`
-- Core benchmark engine: `src/benchmark/bench.py`
-- Best for reproducible sweeps, logs, and figure regeneration
+1. **Research layer**: QUANTICS 2026 methodology and benchmark framing.
+2. **Simulator layer (`mlxq`)**: state-vector and MPS backends on MLX for Apple Silicon.
+3. **Product layer (`QuantumStudio`)**: desktop run orchestration, monitoring, and export.
 
-2. **QuantumStudio UI workflow (desktop app)**
-- UI root: `quantumstudio/`
-- App control wrapper: `quantumstudio/bin/appctl`
-- Best for interactive benchmark setup, run management, and visual inspection
+The core motivation is straightforward: Apple Silicon uses a unified memory model, but there is no default native MLX quantum runtime shipped as a platform quantum simulator. osxQ fills that gap with a local simulator stack and benchmark harnesses for QFT, QAOA, VQE, QCBM, Grover, Hamiltonian/time-evolution workflows, and OpenQASM runs.
 
-## Paper Alignment (QUANTICS 2026)
+This repository is designed for publication-grade reproducibility:
+- deterministic CLI run paths
+- structured CSV/JSON output
+- frozen artifact promotion under `assets/benchmarks-frozen/`
+- UI+CLI parity for auditability
 
-Camera-ready source:
-- `paper/quantics-lncs-2026/mlxquantum_quantics2026_lncs.tex`
+## Project Structure
 
-The benchmark families covered by the paper and supported here include:
-- `qft`
-- `qaoa`
-- `qcbm`
-- `hamiltonian_simulation`
-- `time_evolution`
-- `random_circuit`
-- `variational_circuit`
-- `grover`
-- `ghz`
-- `phase_estimation`
-- `vqe`
-- plus extended families in the current runner (`heisenberg*`, `tfim*`, `long_range_ising`, `ladder_heisenberg`, `steady_state`, `trotter`)
+- `src/` Python simulator + benchmark code (`mlxq`)
+- `bench.sh` single/full benchmark launcher
+- `bench_with_logging.sh` orchestrated benchmark runs with logging/promotions
+- `bench/runs/` per-run outputs (`run_YYYYmmdd_HHMMSS`)
+- `quantumstudio/` desktop UI + backend + control scripts
+- `datasets/qasm/local/` OpenQASM local corpus
+- `paper/quantics-lncs-2026/` paper source and paper-linked images
+- `assets/benchmarks-frozen/` frozen benchmark artifacts and sample bundles
 
-## Repository Structure
+## Paper Context And Representative Results
 
-- `src/` Python package and benchmark code
-- `bench.sh` direct benchmark runner
-- `bench_with_logging.sh` benchmark runner with timestamped logs
-- `bench/` generated run outputs (`.csv`, `.json`, `.png`, logs)
-- `assets/benchmarks-frozen/` frozen benchmark artifact snapshots (release/repro source of truth)
-- `datasets/qasm/local/` local OpenQASM inputs
-- `benchmarks/mqtbench/` vendor benchmark corpus
-- `quantumstudio/` desktop app and backend orchestration
-- `paper/quantics-lncs-2026/` LNCS camera-ready source
+From the QUANTICS 2026 workflow, representative scaling points (Apple Silicon, paper-aligned methodology):
 
-## Prerequisites
+- QFT @ 25q: ~7s scale
+- QAOA @ 25q: ~11s scale
+- Hamiltonian simulation @ 25q: ~40s scale
+- Grover @ 25q: high-growth runtime regime
 
-- macOS 13.3+
+Use this repository’s frozen assets and run logs as the source of truth for exact run-by-run values.
+
+## Installation (Full)
+
+### 1) System prerequisites
+
+- macOS 13.3+ recommended
 - Apple Silicon (M1/M2/M3/M4)
-- Python 3.10+
+- Python 3.10+ (3.11 tested heavily)
+- Optional: Flutter SDK (for UI development builds)
 
-Setup:
+### 2) Core Python environment
 
 ```bash
+cd /Volumes/SSD4tb/Dropbox/DSS/artifacts/code/QuantumStudioPRJ/QuantumStudioCODE
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -U pip
-pip install mlx numpy matplotlib textual pennylane
+pip install -e .
 ```
 
-For local commands in this repo:
+`pyproject.toml` includes core dependencies (`mlx`, `rich`, `numpy`) and optional groups.
 
-```bash
-export PYTHONPATH=src
-```
-
-For QuantumStudio backend dependencies:
+### 3) Backend dependencies (QuantumStudio API)
 
 ```bash
 pip install -r quantumstudio/backend/requirements.txt
 ```
 
-## Command-Line Benchmarks
-
-### Fast Start
-
-Run full suite with defaults:
+### 4) Runtime path for local commands
 
 ```bash
-./bench.sh
+export PYTHONPATH=src
 ```
 
-Run full suite with logging snapshot:
+### 5) Flutter UI dependencies (optional, for UI dev)
 
 ```bash
+cd quantumstudio/flutter_app
+flutter pub get
+```
+
+## Running Benchmarks
+
+### Standard full-orchestrated run
+
+```bash
+cd /Volumes/SSD4tb/Dropbox/DSS/artifacts/code/QuantumStudioPRJ/QuantumStudioCODE
 ./bench_with_logging.sh
 ```
 
-### Common CLI Recipes
-
-Global qubit cap:
+### 12-qubit smoke test (recommended health check)
 
 ```bash
-./bench.sh --max-qubits 12
+cd /Volumes/SSD4tb/Dropbox/DSS/artifacts/code/QuantumStudioPRJ/QuantumStudioCODE
+PYTHON_BIN=/Users/sol/.pyenv/shims/python3 ./bench_with_logging.sh --frozen-parity-12
 ```
 
-Per-benchmark caps:
+### Single-circuit run example
 
 ```bash
-./bench.sh --cap-qft 20 --cap-vqe 12 --cap-phase_estimation 14
+PYTHON_BIN=/Users/sol/.pyenv/shims/python3 ./bench.sh --circuit variational_circuit --simulate-limit 12 --qubits 1,2,5,7,10,11,12
 ```
 
-Single benchmark family:
+## Sample Benchmark Log (12q Smoke)
 
-```bash
-./bench.sh --circuit qaoa --simulate-limit 20
+```text
+[preflight] MLX initialization OK
+=== Single-circuit run: variational_circuit (qubits: 1,2,5,7,10,11,12, cap: 12) ===
+=== Running variational_circuit (qubits: 1,2,5,7,10,11,12, cap: 12) ===
+variational_circuit Scaling Benchmark
+Framework: mlx–quantum | Device: apple–silicon–mlx | Backend: mps
+Testing qubit counts: 1, 2, 5, 7, 10, 11, 12
+variational_circuit    |  1q | gates     8 | wall    3.86 ms
+variational_circuit    |  2q | gates    20 | wall   17.51 ms
+variational_circuit    |  5q | gates    56 | wall   12.41 ms
+variational_circuit    |  7q | gates    80 | wall   16.65 ms
+variational_circuit    | 10q | gates   116 | wall   18.76 ms
+variational_circuit    | 11q | gates   128 | wall   51.75 ms
+variational_circuit    | 12q | gates   140 | wall   38.91 ms
 ```
 
-Run OpenQASM suite:
+## Frozen Assets And Sample Bundles
 
-```bash
-./bench.sh --qasm-suite --qasm-max-qubits 18 --qasm-timeout-ms 30000
-```
+`assets/benchmarks-frozen/` is the reproducibility backbone:
 
-Paper-like qubit schedule preset:
+- `latest/` = current promoted benchmark plots
+- `sample-runs/legacy_25q_logs_2025-10/` = curated historical 24/25q logs
+- `sample-runs/legacy_dmg_stage_bench_snapshot/` = legacy full snapshot (images/csv/json/logs)
+- `sample-runs/legacy_25q_plus_smoke12/` = combined large-qubit + modern 12q smoke artifacts
 
-```bash
-./bench.sh --paper-2504
-```
+Recommended workflow:
 
-MPS backend run:
+1. Run benchmarks (`bench.sh` / `bench_with_logging.sh`).
+2. Validate data in `bench/runs/<run_id>/`.
+3. Promote validated outputs to `assets/benchmarks-frozen/latest/`.
+4. Keep historical reference bundles immutable under `sample-runs/`.
 
-```bash
-./bench.sh --backend mps --mps-dmax 128 --mps-eps 1e-10
-```
+## QuantumStudio UI
 
-Full run with logs plus MPS follow-up:
-
-```bash
-./bench_with_logging.sh --with-mps
-```
-
-### Useful Flags (CLI)
-
-From `bench.sh`:
-- `--max-qubits N`
-- `--cap-<key> N`
-- `--qubits CSV|A-B`
-- `--all-qubits N`
-- `--circuit NAME`
-- `--simulate-limit N`
-- `--qasm-suite`
-- `--benchpress`
-- `--mqtbench`
-- `--backend sv|mps`
-- `--mps-dmax N`, `--mps-eps X`, `--mps-bmax N`
-- `--mps-stop-on-trunc`, `--mps-pair-sweeps`, `--mps-mpo-zz`, `--mps-mpo-xx`, `--mps-mpo-yy`
-- `--paper-2504`
-- `--save-plots`, `--no-save-plots`
-
-From `bench_with_logging.sh`:
-- `--with-mps`
-- `--with-mpsd`
-- `--frozen-parity-12` (SV + MPS full suite + `time_evolution` MPSD, capped to 12 qubits)
-- Same key runtime controls (`--max-qubits`, `--cap-*`, `--circuit`, etc.)
-
-### Output Locations (CLI)
-
-- Per-run output folders: `bench/runs/run_YYYYmmdd_HHMMSS/`
-- Current run pointer: `bench/current`
-- Timestamped logs (inside each run folder): `BENCHMARK_RUN_*.log`
-- Latest log pointer: `bench/LATEST_BENCHMARK.log`
-- Generated metrics and plots: current run folder under `bench/runs/`
-- Frozen latest promoted artifacts: `assets/benchmarks-frozen/latest/`
-- Frozen baseline snapshot: `assets/benchmarks-frozen/baseline_2026-05-01/`
-
-## QuantumStudio UI Workflow
-
-QuantumStudio provides a GUI path for running and inspecting experiments.
-
-### Start UI + Backend
+Start/stop the desktop stack:
 
 ```bash
 cd quantumstudio
 ./bin/appctl up
-```
-
-Check status:
-
-```bash
 ./bin/appctl status
-```
-
-Backend logs:
-
-```bash
 ./bin/appctl logs backend
-```
-
-Stop services:
-
-```bash
 ./bin/appctl down
 ```
 
-### Build QuantumStudio Flutter App
-
-From `quantumstudio/`:
+Build UI artifacts:
 
 ```bash
 ./scripts/build_flutter_app.sh --release
-```
-
-Debug build:
-
-```bash
-./scripts/build_flutter_app.sh --debug
-```
-
-DMG packaging (if desired):
-
-```bash
 ./scripts/build_dmg.sh
 ```
 
-### UI Benchmark Guidance
+## Screenshots
 
-Use UI when you need:
-- Interactive benchmark selection and parameter editing
-- Visual run monitoring
-- Quick comparison of result artifacts before formal paper export
+### Product UI
 
-Use CLI when you need:
-- Batch sweeps and deterministic reruns
-- Full logging and automation
-- Regeneration of publication figures/tables at scale
+![QuantumStudio Screen 1](quantumstudio/assets/screenshots/screen001.png)
+![QuantumStudio Screen 2](quantumstudio/assets/screenshots/screen002.png)
+![QuantumStudio Screen 3](quantumstudio/assets/screenshots/screen003.png)
+![QuantumStudio Screen 4](quantumstudio/assets/screenshots/screen004.png)
+![QuantumStudio Screen 5](quantumstudio/assets/screenshots/screen005.png)
 
-## Using Frozen Benchmarks
+### Benchmark Figures (Paper Workflow)
 
-Benchmark artifacts for release and reproducibility live under `assets/benchmarks-frozen/`:
+![All Benchmarks Comparison](quantumstudio/assets/paper-figures/all_benchmarks_comparison.png)
+![QFT Scaling](quantumstudio/assets/paper-figures/qft_scaling.png)
+![QAOA Scaling](quantumstudio/assets/paper-figures/qaoa_scaling.png)
+![VQE Scaling](quantumstudio/assets/paper-figures/vqe_scaling.png)
+![QCBM Scaling](quantumstudio/assets/paper-figures/qcbm_scaling.png)
+![Grover Scaling](quantumstudio/assets/paper-figures/grover_scaling.png)
+![Hamiltonian Simulation Scaling](quantumstudio/assets/paper-figures/hamiltonian_simulation_scaling.png)
 
-- `bench/runs/<run_id>/` = generated outputs from a specific run
-- `assets/benchmarks-frozen/latest/` = latest promoted artifacts (auto-copied by `bench_with_logging.sh`)
-- `assets/benchmarks-frozen/baseline_2026-05-01/` = preserved frozen baseline snapshot
-- `assets/benchmarks-frozen/from_assets_benchmarks_2026-05-02/` = migrated legacy `assets/benchmarks` content
-- `assets/benchmarks-frozen/sample-runs/` = restored legacy sample material for audit/recovery
+### Paper Image Set (LNCS folder)
 
-`sample-runs/` currently includes:
-- `legacy_25q_logs_2025-10/` = selected historical `BENCHMARK_RUN_*.log` files with 24/25-qubit coverage
-- `legacy_dmg_stage_bench_snapshot/` = full legacy benchmark snapshot (images, CSV/JSON, logs, reports)
-- `README.txt` = provenance note for copied sample assets
+![Paper QFT](paper/quantics-lncs-2026/images_from_paper/qft_scaling.png)
+![Paper QAOA](paper/quantics-lncs-2026/images_from_paper/qaoa_scaling.png)
+![Paper VQE](paper/quantics-lncs-2026/images_from_paper/vqe_scaling.png)
+![Paper QCBM](paper/quantics-lncs-2026/images_from_paper/qcbm_scaling.png)
+![Paper Hamiltonian](paper/quantics-lncs-2026/images_from_paper/hamiltonian_simulation_scaling.png)
+![Paper Grover](paper/quantics-lncs-2026/images_from_paper/grover_scaling.png)
 
-Artifact types you can expect in frozen folders:
-- Images: `*_scaling.png`, `all_benchmarks_comparison.png`, `all_mps_bonds_comparison.png`, `*_bonds.png`
-- CSV: `*_data.csv`, `*_summary.csv`, `*_bonds.csv`, distribution CSVs
-- JSON: `*_mlx_quantum.json`, report JSONs
-- Logs: `BENCHMARK_RUN_*.log`, `LATEST_BENCHMARK.log` (for some snapshots)
+## Licensing
 
-Recommended flow:
-1. Run experiments via CLI or UI.
-2. Validate raw outputs in `bench/runs/<run_id>/`.
-3. Compare against `assets/benchmarks-frozen/baseline_2026-05-01/`.
-4. Promote validated artifacts to `assets/benchmarks-frozen/latest/`.
-5. Keep immutable historical references under `assets/benchmarks-frozen/sample-runs/` (do not overwrite in place).
-
-Regenerate and promote fresh paper-grade assets:
-1. Run: `./bench_with_logging.sh --frozen-parity-12` (or full benchmark mode).
-2. Inspect artifacts in `bench/runs/<run_id>/`.
-3. Copy selected figures/tables to paper folders only after validation.
-4. Keep the full run folder as the source of truth for reproducibility.
-
-12-qubit parity command (for baseline-shape comparison):
-
-```bash
-./bench_with_logging.sh --frozen-parity-12
-```
-
-## Validation / Test Entry Points
-
-Core test runner:
-
-```bash
-./test.sh
-```
-
-Legacy benchmark test artifacts were archived to:
-- `purge/bench_artifacts/bench_test/`
-- `purge/bench_artifacts/bench_test_unit/`
+- Source code: `LICENSE` (BSL-1.1)
+- Binary distribution: `BINARY-LICENSE.txt`
+- Overview: `LICENSE.md`
 
 ## Notes
 
-- This README describes the active Python + QuantumStudio workflow in this repository.
-- Publication and camera-ready materials live under `paper/quantics-lncs-2026/`.
+- This repo is local-first by design: benchmark execution and artifacts remain on-device.
+- For web-facing product copy, see `https://boltzmannentropy.github.io/osxQuantumWEB/`.
