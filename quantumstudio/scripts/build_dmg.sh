@@ -144,7 +144,7 @@ mkdir -p "$PYTHON_BUNDLE"
 xattr -d com.apple.quarantine "$PYTHON_TAR" 2>/dev/null || true
 TEMP_PYTHON_DIR="$(mktemp -d)"
 tar -xzf "$PYTHON_TAR" -C "$TEMP_PYTHON_DIR" --strip-components=1
-cp -R "$TEMP_PYTHON_DIR/"* "$PYTHON_BUNDLE/"
+ditto --noextattr --noqtn "$TEMP_PYTHON_DIR" "$PYTHON_BUNDLE"
 rm -rf "$TEMP_PYTHON_DIR"
 
 info "Creating backend venv and installing dependencies..."
@@ -306,10 +306,10 @@ if [ -f "$DMG_DIR/$DMG_NAME" ]; then
     info "Removed existing DMG"
 fi
 
-DMG_STAGE="$ROOT_DIR/build/dmg-stage"
+DMG_STAGE="/tmp/quantumstudio-dmg-stage-${USER:-user}-$$"
 rm -rf "$DMG_STAGE"
 mkdir -p "$DMG_STAGE"
-cp -R "$APP_PATH" "$DMG_STAGE/$APP_NAME.app"
+ditto --noextattr --noqtn "$APP_PATH" "$DMG_STAGE/$APP_NAME.app"
 ln -s /Applications "$DMG_STAGE/Applications" 2>/dev/null || true
 cp "$ROOT_DIR/LICENSE" "$DMG_STAGE/LICENSE"
 cp "$ROOT_DIR/BINARY-LICENSE.txt" "$DMG_STAGE/BINARY-LICENSE.txt"

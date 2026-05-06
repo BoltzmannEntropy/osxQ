@@ -6,17 +6,41 @@
 
 ![QuantumStudio Dashboard](quantumstudio/assets/screenshots/screen003.png)
 
+osxQuantum is a three-part project: an accepted QUANTICS 2026 paper, the osxQ simulator stack, and the dedicated QuantumStudio desktop UI studio. There is no native MLX quantum simulator available today, so osxQ provides a local simulator layer for QFT, QAOA, VQE, Hamiltonian workflows, and OpenQASM runs.
+QUANTICS website: https://quantics.scitevents.org/
+
 - Website: https://boltzmannentropy.github.io/osxQuantumWEB/
 - Repository: https://github.com/BoltzmannEntropy/osxQ
 - Author: **Shlomo Kashani**
 - Camera-ready PDF: `QUANTICS_2026_14_CR.pdf`
 - Paper source: `paper/quantics-lncs-2026/mlxquantum_quantics2026_lncs.tex`
 
-## Paper Quote
+## How to Cite
 
-> "Our results establish unified memory as a viable platform for quantum algorithm development, education, and benchmarking."
+### Repository (Git / Software Citation)
 
-Source: `QUANTICS_2026_14_CR.pdf` (camera-ready abstract)
+```bibtex
+@software{kashani_osxq_2026,
+  author       = {Shlomo Kashani},
+  title        = {osxQ / QuantumStudio: Apple Silicon Quantum Benchmarking Stack},
+  year         = {2026},
+  url          = {https://github.com/BoltzmannEntropy/osxQ},
+  note         = {GitHub repository}
+}
+```
+
+### Paper Citation
+
+```bibtex
+@inproceedings{kashani_mlxq_2026,
+  author       = {Shlomo Kashani},
+  title        = {mlxQ: Unified Memory Quantum Simulation on Apple Silicon via the MLX Framework},
+  booktitle    = {QUANTICS 2026},
+  year         = {2026},
+  note         = {Camera-ready manuscript: QUANTICS_2026_14_CR.pdf},
+  url          = {https://github.com/BoltzmannEntropy/osxQ}
+}
+```
 
 ## Extended Introduction
 
