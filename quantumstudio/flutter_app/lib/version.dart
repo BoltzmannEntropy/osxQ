@@ -1,5 +1,5 @@
-const String appVersion = "1.0.1";
-const int buildNumber = 2;
+const String appVersion = "1.0.2";
+const int buildNumber = 3;
 const String versionName = "Initial Release";
 const String appAuthor = "QNeura.ai";
 const String appWebsite = "https://qneura.ai/apps.html";
