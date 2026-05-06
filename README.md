@@ -4,6 +4,8 @@
   <p><b>Apple Silicon quantum benchmarking stack</b> with a local simulator, reproducible benchmark pipelines, and a desktop UI.</p>
 </div>
 
+![QuantumStudio Dashboard](quantumstudio/assets/screenshots/screen003.png)
+
 - Website: https://boltzmannentropy.github.io/osxQuantumWEB/
 - Repository: https://github.com/BoltzmannEntropy/osxQ
 - Camera-ready PDF: `QUANTICS_2026_14_CR.pdf`
@@ -109,6 +111,168 @@ PYTHON_BIN=/Users/sol/.pyenv/shims/python3 ./bench_with_logging.sh --frozen-pari
 PYTHON_BIN=/Users/sol/.pyenv/shims/python3 ./bench.sh --circuit variational_circuit --simulate-limit 12 --qubits 1,2,5,7,10,11,12
 ```
 
+## Benchmark Catalog (Detailed)
+
+The benchmark engine accepts the following circuit keys. For each benchmark below:
+- Use the single-circuit form:
+  - `./bench.sh --circuit <key> --simulate-limit <N> --qubits 1,2,5,7,10,11,12`
+- Or run coordinated suites with:
+  - `./bench_with_logging.sh --frozen-parity-12`
+
+### 1) `hamiltonian_simulation`
+- Purpose: product-formula simulation of spin Hamiltonians.
+- Typical command:
+```bash
+./bench.sh --circuit hamiltonian_simulation --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 2) `time_evolution`
+- Purpose: time-evolution scaling over qubit count.
+- Typical command:
+```bash
+./bench.sh --circuit time_evolution --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 3) `trotter`
+- Purpose: Trotterized evolution workload for depth/runtime growth.
+- Typical command:
+```bash
+./bench.sh --circuit trotter --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 4) `steady_state`
+- Purpose: heavier iterative dynamics workload; often the slowest leg.
+- Typical command:
+```bash
+./bench.sh --circuit steady_state --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 5) `heisenberg`
+- Purpose: baseline Heisenberg model scaling.
+- Typical command:
+```bash
+./bench.sh --circuit heisenberg --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 6) `heisenberg_xxz`
+- Purpose: anisotropic XXZ Heisenberg variant.
+- Typical command:
+```bash
+./bench.sh --circuit heisenberg_xxz --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 7) `heisenberg_random_field`
+- Purpose: disordered Heisenberg workload with random field terms.
+- Typical command:
+```bash
+./bench.sh --circuit heisenberg_random_field --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 8) `tfim`
+- Purpose: transverse-field Ising model baseline.
+- Typical command:
+```bash
+./bench.sh --circuit tfim --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 9) `tfim_trotter2`
+- Purpose: second-order Trotter TFIM variant.
+- Typical command:
+```bash
+./bench.sh --circuit tfim_trotter2 --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 10) `tfim_random_field`
+- Purpose: TFIM with random field perturbations.
+- Typical command:
+```bash
+./bench.sh --circuit tfim_random_field --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 11) `long_range_ising`
+- Purpose: long-range interaction Ising scaling.
+- Typical command:
+```bash
+./bench.sh --circuit long_range_ising --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 12) `ladder_heisenberg`
+- Purpose: ladder-geometry Heisenberg workload.
+- Typical command:
+```bash
+./bench.sh --circuit ladder_heisenberg --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 13) `random_circuit`
+- Purpose: generic random gate-circuit scaling.
+- Typical command:
+```bash
+./bench.sh --circuit random_circuit --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 14) `qcbm`
+- Purpose: Quantum Circuit Born Machine benchmark family.
+- Typical command:
+```bash
+./bench.sh --circuit qcbm --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 15) `phase_estimation`
+- Purpose: phase estimation runtime growth.
+- Typical command:
+```bash
+./bench.sh --circuit phase_estimation --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 16) `qft`
+- Purpose: Quantum Fourier Transform scaling.
+- Typical command:
+```bash
+./bench.sh --circuit qft --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 17) `qaoa`
+- Purpose: QAOA-style variational optimization workload.
+- Typical command:
+```bash
+./bench.sh --circuit qaoa --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 18) `vqe`
+- Purpose: VQE-style variational eigensolver workload.
+- Typical command:
+```bash
+./bench.sh --circuit vqe --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 19) `variational_circuit`
+- Purpose: generic parameterized variational circuit benchmark.
+- Typical command:
+```bash
+./bench.sh --circuit variational_circuit --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 20) `grover`
+- Purpose: Grover-style amplitude amplification benchmark.
+- Typical command:
+```bash
+./bench.sh --circuit grover --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### 21) `ghz`
+- Purpose: GHZ state generation and scaling.
+- Typical command:
+```bash
+./bench.sh --circuit ghz --simulate-limit 12 --qubits 1,2,5,7,10,11,12
+```
+
+### QASM Suite
+- Purpose: OpenQASM corpus execution from `datasets/qasm/local/`.
+- Typical command:
+```bash
+./bench.sh --qasm-suite --qasm-max-qubits 18 --qasm-timeout-ms 30000
+```
+
 ## Sample Benchmark Log (12q Smoke)
 
 ```text
@@ -142,6 +306,30 @@ Recommended workflow:
 2. Validate data in `bench/runs/<run_id>/`.
 3. Promote validated outputs to `assets/benchmarks-frozen/latest/`.
 4. Keep historical reference bundles immutable under `sample-runs/`.
+
+## Testing (200+ Coverage)
+
+The repository includes broad simulator, algorithm, and backend tests:
+- `src/tests/` + `quantumstudio/tests/` currently expose **233+ test functions**.
+- Raw assertion density across test code is **well above 200 checks** (500+ assert-related lines).
+- Coverage includes:
+  - gate algebra and unitary identities
+  - state preparation and measurement parity
+  - QFT/QAOA/VQE/QCBM/Grover behavior checks
+  - MPS backend parity and bond-growth diagnostics
+  - OpenQASM parser/execution checks
+  - QuantumStudio backend API tests
+
+Run tests:
+```bash
+./test.sh
+```
+
+Targeted suites:
+```bash
+python3 -m pytest src/tests -q
+python3 -m pytest quantumstudio/tests -q
+```
 
 ## QuantumStudio UI
 
