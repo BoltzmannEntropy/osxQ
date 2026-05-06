@@ -8,8 +8,15 @@
 
 - Website: https://boltzmannentropy.github.io/osxQuantumWEB/
 - Repository: https://github.com/BoltzmannEntropy/osxQ
+- Author: **Shlomo Kashani**
 - Camera-ready PDF: `QUANTICS_2026_14_CR.pdf`
 - Paper source: `paper/quantics-lncs-2026/mlxquantum_quantics2026_lncs.tex`
+
+## Paper Quote
+
+> "Our results establish unified memory as a viable platform for quantum algorithm development, education, and benchmarking."
+
+Source: `QUANTICS_2026_14_CR.pdf` (camera-ready abstract)
 
 ## Extended Introduction
 
